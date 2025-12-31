@@ -72,6 +72,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/cms', cmsRoutes);
+app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Mahalaxmi Tailoring API is running...');

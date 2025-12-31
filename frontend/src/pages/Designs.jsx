@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { getProducts } from '../services/api';
+import { getProducts, getCategories } from '../services/api';
 import { Filter, ShoppingBag, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ const Designs = () => {
 
     // State
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showFilters, setShowFilters] = useState(false); // Mobile toggle
@@ -24,25 +25,26 @@ const Designs = () => {
     const [sortBy, setSortBy] = useState('newest');
 
     useEffect(() => {
-        const fetchDesigns = async () => {
+        const fetchData = async () => {
             try {
-                const data = await getProducts();
-                // Safeguard: Ensure data is an array
-                if (Array.isArray(data)) {
-                    setProducts(data);
-                } else {
-                    console.error('API Error: Expected array but got:', data);
-                    setProducts([]);
-                    setError('Received invalid data from server.');
-                }
+                const [productsData, categoriesData] = await Promise.all([getProducts(), getCategories()]);
+
+                // Products
+                if (Array.isArray(productsData)) setProducts(productsData);
+                else setProducts([]);
+
+                // Categories
+                if (Array.isArray(categoriesData)) setCategories(categoriesData);
+                else setCategories([]);
+
                 setLoading(false);
             } catch (err) {
-                console.error("Error loading designs:", err);
+                console.error("Error loading data:", err);
                 setError('Failed to load designs. Please try again later.');
                 setLoading(false);
             }
         };
-        fetchDesigns();
+        fetchData();
     }, []);
 
     // Handlers
@@ -78,8 +80,6 @@ const Designs = () => {
 
     // console.log("Total Products:", products.length, "Filtered Count:", filteredProducts.length);
 
-    const categories = ['Rajlaxmi', 'Peshwai', 'Mastani', 'Normal'];
-
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory"><div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand-maroon"></div></div>;
     if (error) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory text-red-600"><p>{error}</p></div>;
 
@@ -111,14 +111,14 @@ const Designs = () => {
                             <h4 className="font-bold text-sm text-gray-800 mb-3 uppercase tracking-wide">Category</h4>
                             <div className="space-y-2">
                                 {categories.map(cat => (
-                                    <label key={cat} className="flex items-center gap-2 cursor-pointer hover:text-brand-maroon">
+                                    <label key={cat._id} className="flex items-center gap-2 cursor-pointer hover:text-brand-maroon">
                                         <input
                                             type="checkbox"
-                                            checked={selectedCategories.includes(cat)}
-                                            onChange={() => toggleCategory(cat)}
+                                            checked={selectedCategories.includes(cat.name)}
+                                            onChange={() => toggleCategory(cat.name)}
                                             className="rounded text-brand-maroon focus:ring-brand-gold"
                                         />
-                                        <span className="text-gray-600 text-sm">{cat}</span>
+                                        <span className="text-gray-600 text-sm">{cat.name}</span>
                                     </label>
                                 ))}
                             </div>

@@ -38,6 +38,7 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 
 // Components
 import CookieConsent from './components/CookieConsent';
+import ChatWidget from './components/ChatBot/ChatWidget';
 
 // Loading Component
 const LoadingSpinner = () => (
@@ -134,6 +135,7 @@ const App = () => {
               <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
             </Routes>
           </Suspense>
+          <ChatWidget />
           <CookieConsent />
         </CartProvider>
       </AuthProvider>
