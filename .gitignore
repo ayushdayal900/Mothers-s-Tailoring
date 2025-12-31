@@ -3,7 +3,7 @@ node_modules/
 .pnpm-store
 
 # Environment Variables
-.env
+.backend/.env
 .env.local
 .env.development.local
 .env.test.local
