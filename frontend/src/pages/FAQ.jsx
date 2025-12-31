@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 
 const FAQ = () => {
-    // FAQ Data Structure
-    const faqData = [
+    const [fetchedFaqs, setFetchedFaqs] = useState([]);
+
+    useEffect(() => {
+        const fetchFaqs = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/api/cms/faq');
+                setFetchedFaqs(res.data);
+            } catch (error) {
+                console.error("Error fetching FAQs", error);
+            }
+        };
+        fetchFaqs();
+    }, []);
+
+    // FAQ Data Structure (Static + Dynamic)
+    const staticFaqData = [
         {
             category: "Measurements & Fitting",
             questions: [
@@ -26,6 +41,22 @@ const FAQ = () => {
             ]
         }
     ];
+
+    // Merge Dynamic FAQs
+    const faqData = [...staticFaqData];
+    if (fetchedFaqs.length > 0) {
+        // Map CMS format to UI format
+        const dynamicQuestions = fetchedFaqs.map(item => ({
+            q: item.question,
+            a: item.content
+        }));
+
+        // Add to "General Inquiries" or append to lists
+        faqData.unshift({
+            category: "General Inquiries & Recent Updates",
+            questions: dynamicQuestions
+        });
+    }
 
     const [openIndex, setOpenIndex] = useState(null);
 

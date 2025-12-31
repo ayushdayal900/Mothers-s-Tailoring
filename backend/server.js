@@ -31,8 +31,8 @@ app.use(morgan('dev')); // Log requests
 
 // Rate Limiting
 const limiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000 // limit each IP to 100 requests per windowMs -> Increased to 1000 for dev
 });
 app.use('/api', limiter);
 
@@ -63,12 +63,15 @@ mongoose.connect(MONGODB_URI, { dbName: 'Mahalaxmi_db' })
 
 // Routes
 app.use('/api/categories', require('./routes/categoryRoutes'));
+const cmsRoutes = require('./routes/cmsRoutes');
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/customers', require('./routes/customerRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/cms', cmsRoutes);
 
 app.get('/', (req, res) => {
     res.send('Mother\'s Tailoring API is running...');

@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-react';
+import axios from 'axios';
 
 const Contact = () => {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form Submitted', formData);
-        alert('Thank you for reaching out! We will contact you shortly.');
-        setFormData({ name: '', email: '', phone: '', message: '' });
+        try {
+            await axios.post('http://localhost:5000/api/contact', formData);
+            alert('Thank you for reaching out! We have received your message.');
+            setFormData({ name: '', email: '', phone: '', message: '' });
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('Failed to send message. Please try again.');
+        }
     };
 
     return (
@@ -31,7 +37,7 @@ const Contact = () => {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-gray-800">Visit Us</h4>
-                                        <p className="text-gray-600">123, Laxmi Road, Near Temple,<br />Pune, Maharashtra - 411030</p>
+                                        <p className="text-gray-600">Kalyani Chauk, Balaji Mandir,<br />Mangrul Pir, Maharashtra - 444403</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
@@ -40,7 +46,7 @@ const Contact = () => {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-gray-800">Call Us</h4>
-                                        <p className="text-gray-600">+91 98765 43210</p>
+                                        <p className="text-gray-600">+91 7057164648</p>
                                         <p className="text-sm text-gray-500">Mon - Sat, 10am - 8pm</p>
                                     </div>
                                 </div>
@@ -50,7 +56,7 @@ const Contact = () => {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-gray-800">Email</h4>
-                                        <p className="text-gray-600">support@mahalxmitailors.com</p>
+                                        <p className="text-gray-600">jayashridayal1@gmail.com</p>
                                     </div>
                                 </div>
                             </div>
@@ -64,9 +70,19 @@ const Contact = () => {
                             </div>
                         </div>
 
-                        {/* Map Embed (Placeholder) */}
-                        <div className="bg-gray-200 h-64 rounded-xl overflow-hidden shadow-inner flex items-center justify-center text-gray-500">
-                            Google Map Embed Here
+                        {/* Map Embed */}
+                        <div className="bg-gray-200 h-64 rounded-xl overflow-hidden shadow-inner">
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                id="gmap_canvas"
+                                src="https://maps.google.com/maps?q=Kalyani%20Chauk%2C%20Balaji%20Mandir%2C%20Mangrul%20Pir&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                frameBorder="0"
+                                scrolling="no"
+                                marginHeight="0"
+                                marginWidth="0"
+                                title="Laxmi Tailors Location"
+                            ></iframe>
                         </div>
                     </div>
 

@@ -89,15 +89,23 @@ const AdminOrderDetails = () => {
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex justify-between">
-                                            <p className="font-bold text-gray-800">Product ID: {item.product}</p>
+                                            <div>
+                                                <p className="font-bold text-gray-800">{item.product?.name || 'Unknown Product'}</p>
+                                                <p className="text-xs text-gray-500">ID: {item.product?._id || 'N/A'}</p>
+                                            </div>
                                             <p className="font-medium">₹{item.totalPrice}</p>
                                         </div>
-                                        <p className="text-sm text-gray-500">Qty: {item.quantity} | Unit: ₹{item.unitPrice}</p>
+                                        <div className="text-sm text-gray-500 mt-1">
+                                            <p>Qty: {item.quantity} | Unit: ₹{item.unitPrice}</p>
+                                            {item.selectedFabric && <p>Fabric: {item.selectedFabric}</p>}
+                                        </div>
 
-                                        {item.customization && (
+                                        {item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0 && (
                                             <div className="mt-2 text-xs bg-gray-50 p-2 rounded text-gray-600 border border-gray-200">
                                                 <span className="font-semibold block mb-1">Customizations:</span>
-                                                <pre className="whitespace-pre-wrap font-sans">{JSON.stringify(item.customization, null, 2)}</pre>
+                                                <pre className="whitespace-pre-wrap font-sans">
+                                                    {JSON.stringify(item.selectedCustomizations, null, 2)}
+                                                </pre>
                                             </div>
                                         )}
                                     </div>
@@ -200,10 +208,10 @@ const AdminOrderDetails = () => {
                             <MapPin size={20} className="text-gray-500" /> Shipping Address
                         </h3>
                         <div className="text-sm text-gray-600 leading-relaxed">
-                            <p>{order.shippingAddress?.street}</p>
-                            <p>{order.shippingAddress?.city}, {order.shippingAddress?.state}</p>
-                            <p>{order.shippingAddress?.postalCode}</p>
-                            <p>{order.shippingAddress?.country}</p>
+                            <p>{order.deliveryAddress?.street}</p>
+                            <p>{order.deliveryAddress?.city}, {order.deliveryAddress?.state}</p>
+                            <p>{order.deliveryAddress?.postalCode}</p>
+                            <p>{order.deliveryAddress?.country}</p>
                         </div>
                     </div>
 

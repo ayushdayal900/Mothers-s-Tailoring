@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Scissors, Clock, Users, Award } from 'lucide-react';
+import aaiImage from '../assets/aai.jpeg';
 
 const About = () => {
     const { t } = useTranslation();
@@ -23,7 +24,7 @@ const About = () => {
                     <div className="relative">
                         <div className="absolute inset-0 bg-brand-maroon transform translate-x-4 translate-y-4 rounded-xl opacity-10"></div>
                         <img
-                            src="https://images.unsplash.com/photo-1558695029-798c8959d28e?auto=format&fit=crop&q=80&w=800"
+                            src={aaiImage}
                             alt="Master Tailor at work"
                             className="relative rounded-xl shadow-lg w-full h-96 object-cover"
                         />

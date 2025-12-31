@@ -1,10 +1,13 @@
 import React, { useContext } from 'react';
 import { CartContext } from '../context/CartContext';
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const Cart = () => {
     const { cartItems, removeFromCart, updateQuantity, cartTotal } = useContext(CartContext);
+    const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     if (cartItems.length === 0) {
         return (
@@ -114,12 +117,19 @@ const Cart = () => {
                                 <span className="font-bold text-2xl text-brand-maroon">₹{cartTotal}</span>
                             </div>
 
-                            <Link
-                                to="/checkout"
+                            <button
+                                onClick={() => {
+                                    if (user) {
+                                        navigate('/checkout');
+                                    } else {
+                                        alert('Please login to proceed to checkout.');
+                                        navigate('/login');
+                                    }
+                                }}
                                 className="w-full flex items-center justify-center gap-2 bg-brand-maroon text-white py-4 rounded-lg font-bold shadow-lg hover:bg-red-900 transition"
                             >
                                 Proceed to Checkout <ArrowRight size={20} />
-                            </Link>
+                            </button>
 
                             <div className="mt-6 text-center">
                                 <p className="text-xs text-gray-400">

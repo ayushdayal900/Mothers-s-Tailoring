@@ -6,7 +6,7 @@ const Category = require('../models/Category');
 // @access  Public
 exports.getProducts = async (req, res) => {
     try {
-        const products = await Product.find({}).populate('category');
+        const products = await Product.find({}).populate('category').sort({ createdAt: -1 });
         res.json(products);
     } catch (error) {
         console.error(error);

@@ -31,6 +31,7 @@ const AdminOrderDetails = lazy(() => import('./pages/AdminOrderDetails'));
 const AdminCMS = lazy(() => import('./pages/AdminCMS'));
 const AdminCustomers = lazy(() => import('./pages/AdminCustomers'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 const CustomerOrders = lazy(() => import('./pages/CustomerOrders'));
 const OrderDetails = lazy(() => import('./pages/OrderDetails'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
@@ -126,6 +127,7 @@ const App = () => {
                 <Route path="cms" element={<AdminCMS />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="payments" element={<AdminPayments />} />
+                <Route path="messages" element={<AdminMessages />} />
               </Route>
 
               {/* Public Footer Pages */}

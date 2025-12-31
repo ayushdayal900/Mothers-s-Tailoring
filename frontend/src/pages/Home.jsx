@@ -31,12 +31,9 @@ const Hero = () => {
 
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-20">
                 <div className="md:w-1/2 text-center md:text-left">
-                    <span className="text-brand-gold font-bold tracking-widest uppercase mb-4 block text-sm md:text-base">
-                        {t('brand.since')}
-                    </span>
                     <h1 className="text-5xl md:text-7xl font-serif font-bold text-brand-maroon mb-6 leading-tight drop-shadow-sm">
                         {t('hero.title')} <br />
-                        <span className="text-brand-teal italic">{t('hero.subtitle')}</span>
+                        <span className="text-brand-teal italic">{t('hero.name')}</span>
                     </h1>
                     <p className="text-lg text-brand-charcoal mb-8 max-w-lg mx-auto md:mx-0 font-light leading-relaxed">
                         {t('hero.description')}
@@ -49,6 +46,10 @@ const Hero = () => {
                             {t('hero.ctaCustom')} <span className="font-marathi ml-1">{t('hero.ctaCustomMarathi')}</span>
                         </button>
                     </div>
+                    <span className="font-bold tracking-widest uppercase mt-20  mb-4 block text-lg md:text-xl" style={{ color: "#98349aff" }}>
+                        {t('brand.since')}
+                    </span>
+
                 </div>
 
                 {/* Illustration Side */}
@@ -58,7 +59,7 @@ const Hero = () => {
 
                         <div className="absolute bottom-4 left-0 w-full text-center">
                             <div className="bg-white/80 backdrop-blur px-4 py-2 mx-auto inline-block rounded-lg shadow-sm border border-brand-gold/20">
-                                <p className="font-serif text-brand-maroon italic text-sm">{t('hero.designLabel')}</p>
+                                <p className="font-serif text-brand-maroon italic text-sm">{t('hero.designLabel')} <b>{t('hero.name')}</b></p>
                             </div>
                         </div>
                     </div>

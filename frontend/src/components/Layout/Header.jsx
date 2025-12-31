@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { Menu, X, ShoppingBag } from 'lucide-react';
+import React, { useState, useContext } from 'react';
+import { Menu, X, ShoppingBag, User, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../LanguageToggle';
+import { AuthContext } from '../../context/AuthContext';
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const { t } = useTranslation();
+    const { user, logout } = useContext(AuthContext);
 
     const isActive = (path) => location.pathname === path ? "text-brand-maroon font-bold" : "";
 
@@ -26,14 +29,31 @@ const Header = () => {
                     <Link to="/about" className={`hover:text-brand-maroon transition duration-300 ${isActive('/about')}`}>{t('nav.about')}</Link>
                     <Link to="/faq" className={`hover:text-brand-maroon transition duration-300 ${isActive('/faq')}`}>{t('nav.faq')}</Link>
                     <Link to="/contact" className={`hover:text-brand-maroon transition duration-300 ${isActive('/contact')}`}>{t('nav.contact')}</Link>
+                    {user && (
+                        <Link to="/cart" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/cart')}`}>
+                            <ShoppingBag size={20} />
+                        </Link>
+                    )}
                 </nav>
 
                 {/* User Actions */}
                 <div className="hidden md:flex items-center space-x-4">
-                    <Link to="/login" className="text-sm font-medium text-brand-teal hover:text-brand-maroon transition">
-                        {t('nav.login')}
-                    </Link>
-
+                    {user ? (
+                        <div className="flex items-center gap-4">
+                            <Link to="/customer/dashboard" className="flex items-center gap-2 text-sm font-medium text-brand-maroon hover:text-brand-gold transition">
+                                <User size={18} />
+                                <span className="hidden lg:inline">{user.firstName}</span>
+                            </Link>
+                            <button onClick={logout} className="text-gray-500 hover:text-red-500 transition" title="Logout">
+                                <LogOut size={18} />
+                            </button>
+                        </div>
+                    ) : (
+                        <Link to="/login" className="text-sm font-medium text-brand-teal hover:text-brand-maroon transition">
+                            {t('nav.login')}
+                        </Link>
+                    )}
+                    <LanguageToggle />
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -51,8 +71,26 @@ const Header = () => {
                         <Link to="/gallery" className="text-brand-charcoal hover:text-brand-maroon" onClick={() => setIsOpen(false)}>{t('nav.gallery')}</Link>
                         <Link to="/about" className="text-brand-charcoal hover:text-brand-maroon" onClick={() => setIsOpen(false)}>{t('nav.about')}</Link>
                         <Link to="/contact" className="text-brand-charcoal hover:text-brand-maroon" onClick={() => setIsOpen(false)}>{t('nav.contact')}</Link>
-                        <Link to="/login" className="text-brand-teal font-medium" onClick={() => setIsOpen(false)}>{t('nav.login')}</Link>
-
+                        {user && (
+                            <Link to="/cart" className="text-brand-charcoal hover:text-brand-maroon flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
+                                <ShoppingBag size={18} /> Cart
+                            </Link>
+                        )}
+                        {user ? (
+                            <>
+                                <Link to="/customer/dashboard" className="text-brand-maroon font-medium flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
+                                    <User size={18} /> My Account
+                                </Link>
+                                <button onClick={() => { logout(); setIsOpen(false); }} className="text-red-500 font-medium flex items-center justify-center gap-2 w-full">
+                                    <LogOut size={18} /> Logout
+                                </button>
+                            </>
+                        ) : (
+                            <Link to="/login" className="text-brand-teal font-medium" onClick={() => setIsOpen(false)}>{t('nav.login')}</Link>
+                        )}
+                        <div className="flex justify-center mt-2">
+                            <LanguageToggle />
+                        </div>
                     </div>
                 </div>
             )}

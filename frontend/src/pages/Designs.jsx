@@ -2,11 +2,15 @@ import React, { useEffect, useState, useContext } from 'react';
 import { getProducts } from '../services/api';
 import { Filter, ShoppingBag, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 
 const Designs = () => {
     const { t } = useTranslation();
     const { addToCart } = useContext(CartContext);
+    const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     // State
     const [products, setProducts] = useState([]);
@@ -90,7 +94,7 @@ const Designs = () => {
 
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Sidebar Filters */}
-                    <aside className={`md:w-64 bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit ${showFilters ? 'block' : 'hidden md:block'}`}>
+                    <aside className={`md:w-64 bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit sticky top-24 ${showFilters ? 'block' : 'hidden md:block'}`}>
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-bold text-lg text-brand-maroon">Filters</h3>
                             <X size={20} className="md:hidden cursor-pointer" onClick={() => setShowFilters(false)} />
@@ -160,7 +164,15 @@ const Designs = () => {
                                         />
                                         {/* Overlay Cart Button */}
                                         <button
-                                            onClick={() => { addToCart(product); alert('Added to cart!'); }}
+                                            onClick={() => {
+                                                if (user) {
+                                                    addToCart(product);
+                                                    alert('Added to cart!');
+                                                } else {
+                                                    alert('Please login to add items to cart.');
+                                                    navigate('/login');
+                                                }
+                                            }}
                                             className="absolute bottom-4 right-4 bg-white text-brand-maroon p-3 rounded-full shadow-lg hover:bg-brand-maroon hover:text-white transition transform translate-y-12 group-hover:translate-y-0"
                                         >
                                             <ShoppingBag size={20} />

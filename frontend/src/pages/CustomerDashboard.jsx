@@ -120,7 +120,7 @@ const CustomerDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 hidden md:block">
+            <aside className="bg-white border-r border-gray-200 hidden md:block w-64 sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto">
                 <div className="p-6">
                     <h2 className="text-xl font-serif text-brand-maroon font-bold">My Account</h2>
                     <p className="text-sm text-gray-500 mt-1">

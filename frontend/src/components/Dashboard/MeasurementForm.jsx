@@ -34,6 +34,26 @@ const MeasurementForm = ({ initialData, onSave }) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const STANDARD_SIZES = {
+        'S': { blouseLength: 13.5, blouseWidth: 32, waist: 26, hip: 36, shoulderWidth: 14, sareeLength: 5.5 },
+        'M': { blouseLength: 14, blouseWidth: 34, waist: 28, hip: 38, shoulderWidth: 14.5, sareeLength: 5.5 },
+        'L': { blouseLength: 14.5, blouseWidth: 36, waist: 30, hip: 40, shoulderWidth: 15, sareeLength: 5.5 },
+        'XL': { blouseLength: 15, blouseWidth: 38, waist: 32, hip: 42, shoulderWidth: 15.5, sareeLength: 6 },
+        'XXL': { blouseLength: 15.5, blouseWidth: 40, waist: 34, hip: 44, shoulderWidth: 16, sareeLength: 6 },
+        'XXXL': { blouseLength: 16, blouseWidth: 42, waist: 36, hip: 46, shoulderWidth: 16.5, sareeLength: 6.3 }
+    };
+
+    const handleSizePreset = (size) => {
+        const measurements = STANDARD_SIZES[size];
+        if (measurements) {
+            setFormData({
+                ...formData,
+                ...measurements,
+                profileName: `My Body Measurements (${size})`
+            });
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -57,6 +77,24 @@ const MeasurementForm = ({ initialData, onSave }) => {
                     {message}
                 </div>
             )}
+
+            {/* Standard Size Presets */}
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Quick Fill (Standard Sizes)</label>
+                <div className="flex flex-wrap gap-2">
+                    {['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].map((size) => (
+                        <button
+                            key={size}
+                            type="button"
+                            onClick={() => handleSizePreset(size)}
+                            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-brand-maroon hover:text-white hover:border-brand-maroon transition shadow-sm"
+                        >
+                            {size}
+                        </button>
+                    ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Clicking a size will pre-fill the form with standard measurements. You can still adjust them below.</p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
