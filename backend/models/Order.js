@@ -85,7 +85,7 @@ const orderSchema = new mongoose.Schema({
 
 // Indexes for common queries
 orderSchema.index({ customer: 1, createdAt: -1 }); // Optimize "My Orders"
-orderSchema.index({ orderNumber: 1 }); // Optimize Search by Order #
+// orderSchema.index({ orderNumber: 1 }); // Already indexed by unique: true
 orderSchema.index({ status: 1 }); // Optimize Admin Status Filters
 
 module.exports = mongoose.model('Order', orderSchema);

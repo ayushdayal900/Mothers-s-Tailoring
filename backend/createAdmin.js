@@ -6,7 +6,7 @@ require('dotenv').config();
 const createAdmin = async () => {
     try {
         const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mahalxmi_tailors';
-        await mongoose.connect(MONGODB_URI);
+        await mongoose.connect(MONGODB_URI, { dbName: 'Mahalaxmi_db' });
         console.log('✅ Connected to MongoDB');
 
         const adminEmail = 'admin@example.com';
@@ -14,13 +14,22 @@ const createAdmin = async () => {
 
         const userExists = await User.findOne({ email: adminEmail });
 
-        if (userExists) {
-            console.log('⚠️ Admin user already exists.');
-            process.exit(0);
-        }
-
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(adminPassword, salt);
+
+        if (userExists) {
+            console.log('⚠️ Admin user already exists. Updating password...');
+            userExists.firstName = 'Admin';
+            userExists.lastName = 'User';
+            userExists.password = hashedPassword;
+            await userExists.save();
+            console.log('✅ Admin credentials updated!');
+            console.log('-----------------------------------');
+            console.log(`Email:    ${adminEmail}`);
+            console.log(`Password: ${adminPassword}`);
+            console.log('-----------------------------------');
+            process.exit(0);
+        }
 
         await User.create({
             firstName: 'Admin',

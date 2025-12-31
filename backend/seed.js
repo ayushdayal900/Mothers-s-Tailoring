@@ -11,7 +11,7 @@ const MONGODB_URI =
     process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mahalxmi_tailors';
 
 mongoose
-    .connect(MONGODB_URI)
+    .connect(MONGODB_URI, { dbName: 'Mahalaxmi_db' })
     .then(() => console.log('✅ MongoDB Connected for Seeding'))
     .catch((err) => {
         console.error('❌ MongoDB Connection Error:', err);

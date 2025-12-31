@@ -57,11 +57,12 @@ app.use(hpp()); // Prevent HTTP Param Pollution
 // Database Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mahalxmi_tailors';
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, { dbName: 'Mahalaxmi_db' })
     .then(() => console.log('✅ MongoDB Connected Successfully'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Routes
+app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/customers', require('./routes/customerRoutes'));

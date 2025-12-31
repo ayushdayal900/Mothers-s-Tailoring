@@ -15,7 +15,11 @@ const Login = () => {
         setError('');
         const res = await login(email, password);
         if (res.success) {
-            navigate('/customer/dashboard');
+            if (res.role === 'admin') {
+                navigate('/admin/dashboard');
+            } else {
+                navigate('/customer/dashboard');
+            }
         } else {
             setError(res.message);
         }

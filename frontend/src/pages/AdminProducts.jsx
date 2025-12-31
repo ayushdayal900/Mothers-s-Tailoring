@@ -19,11 +19,6 @@ const AdminProducts = () => {
         fabricOptions: ''
     });
 
-    useEffect(() => {
-        fetchProducts();
-        fetchCategories(); // We need this!
-    }, []);
-
     const fetchProducts = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/products');
@@ -35,11 +30,19 @@ const AdminProducts = () => {
         }
     };
 
-    // Note: We need a category endpoint. Assuming one exists or we mock it from seed data logic
     const fetchCategories = async () => {
-        // Implement GET /api/categories if not existing, or just use hardcoded for now if backend missing
-        // For robustness, let's assume we can get them.
+        try {
+            const res = await axios.get('http://localhost:5000/api/categories');
+            setCategories(res.data);
+        } catch (error) {
+            console.error("Error fetching categories", error);
+        }
     };
+
+    useEffect(() => {
+        fetchProducts();
+        fetchCategories();
+    }, []);
 
     const handleEdit = (product) => {
         setEditingProduct(product);
@@ -74,9 +77,9 @@ const AdminProducts = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
             if (editingProduct) {
-                await axios.put(`http://localhost:5000/api/admin/products/${editingProduct._id}`, payload, config);
+                await axios.put(`http://localhost:5000/api/products/${editingProduct._id}`, payload, config);
             } else {
-                await axios.post(`http://localhost:5000/api/admin/products`, payload, config);
+                await axios.post(`http://localhost:5000/api/products`, payload, config);
             }
             setShowModal(false);
             fetchProducts();
@@ -92,7 +95,7 @@ const AdminProducts = () => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            await axios.delete(`http://localhost:5000/api/admin/products/${id}`, config);
+            await axios.delete(`http://localhost:5000/api/products/${id}`, config);
             fetchProducts();
         } catch (error) {
             console.error(error);
@@ -164,9 +167,18 @@ const AdminProducts = () => {
                                     <input type="number" required className="w-full p-2 border rounded-lg" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
                                 </div>
                                 <div>
-                                    {/* Category ID Input for now, ideally dropdown */}
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category (ID)</label>
-                                    <input type="text" className="w-full p-2 border rounded-lg" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} placeholder="Enter Category ID" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                    <select
+                                        required
+                                        className="w-full p-2 border rounded-lg"
+                                        value={formData.category}
+                                        onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                    >
+                                        <option value="">Select Category</option>
+                                        {categories.map(cat => (
+                                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                             <div>

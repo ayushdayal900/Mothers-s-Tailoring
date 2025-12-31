@@ -33,9 +33,7 @@ const Header = () => {
                     <Link to="/login" className="text-sm font-medium text-brand-teal hover:text-brand-maroon transition">
                         {t('nav.login')}
                     </Link>
-                    <Link to="/contact" className="bg-brand-teal text-white px-6 py-2 rounded-xl hover:bg-teal-700 transition shadow-lg font-medium tracking-wide">
-                        {t('nav.bookAppointment')}
-                    </Link>
+
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -54,9 +52,7 @@ const Header = () => {
                         <Link to="/about" className="text-brand-charcoal hover:text-brand-maroon" onClick={() => setIsOpen(false)}>{t('nav.about')}</Link>
                         <Link to="/contact" className="text-brand-charcoal hover:text-brand-maroon" onClick={() => setIsOpen(false)}>{t('nav.contact')}</Link>
                         <Link to="/login" className="text-brand-teal font-medium" onClick={() => setIsOpen(false)}>{t('nav.login')}</Link>
-                        <Link to="/contact" className="bg-brand-teal text-white px-5 py-2 rounded-xl w-full inline-block" onClick={() => setIsOpen(false)}>
-                            {t('nav.bookAppointment')}
-                        </Link>
+
                     </div>
                 </div>
             )}

@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop';
 
 // Layout Components
 import Header from './components/Layout/Header'; // Adjusted path
+import AdminHeader from './components/Layout/AdminHeader';
 import Footer from './components/Layout/Footer'; // Adjusted path
 
 // Lazy Load Pages
@@ -49,6 +50,14 @@ const PublicLayout = ({ children }) => (
   <>
     <Header />
     <main>{children}</main>
+    <Footer />
+  </>
+);
+
+const AdminLayout = ({ children }) => (
+  <>
+    <AdminHeader />
+    <main className="min-h-screen bg-gray-50 pb-12">{children}</main>
     <Footer />
   </>
 );
@@ -109,7 +118,7 @@ const App = () => {
               </Route>
 
               {/* Admin Routes */}
-              <Route path="/admin" element={<ProtectedRoute role="admin"><PublicLayout><div className="pt-24 min-h-screen bg-gray-100"><Outlet /></div></PublicLayout></ProtectedRoute>}>
+              <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout><Outlet /></AdminLayout></ProtectedRoute>}>
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="orders/:id" element={<AdminOrderDetails />} />

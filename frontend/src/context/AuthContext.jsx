@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             setToken(res.data.token);
             setUser(res.data);
             axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
-            return { success: true };
+            return { success: true, role: res.data.role };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Login failed' };
         }
