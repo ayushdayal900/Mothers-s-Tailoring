@@ -72,6 +72,7 @@ const CustomerDashboard = () => {
 
     const [stats, setStats] = useState({ activeOrders: 0, totalSpent: 0 });
     const [recentOrders, setRecentOrders] = useState([]);
+    const [allOrders, setAllOrders] = useState([]);
 
     useEffect(() => {
         if (activeTab === 'overview') {
@@ -80,8 +81,21 @@ const CustomerDashboard = () => {
             fetchMeasurements();
         } else if (activeTab === 'addresses') {
             fetchUserData();
+        } else if (activeTab === 'orders') {
+            fetchAllOrders();
         }
     }, [activeTab]);
+
+    const fetchAllOrders = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const res = await axios.get('http://localhost:5000/api/orders/myorders', config);
+            setAllOrders(res.data);
+        } catch (error) {
+            console.error("Error fetching orders", error);
+        }
+    };
 
     const fetchDashboardData = async () => {
         try {
@@ -272,13 +286,59 @@ const CustomerDashboard = () => {
                     </div>
                 )}
                 {activeTab === 'orders' && (
-                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center py-20">
-                        <Package size={48} className="mx-auto text-gray-300 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900">No Orders Yet</h3>
-                        <p className="text-gray-500 mb-6">Start browsing our collection to place your first order.</p>
-                        <a href="/designs" className="inline-block bg-brand-maroon text-white px-6 py-2 rounded-full hover:bg-red-900 transition">
-                            Browse Designs
-                        </a>
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h1 className="text-2xl font-serif font-bold text-gray-800">My Orders</h1>
+                        </div>
+
+                        {allOrders.length > 0 ? (
+                            <div className="grid gap-4">
+                                {allOrders.map(order => (
+                                    <div key={order._id} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                                        <div className="flex items-center gap-6 flex-1">
+                                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 flex-shrink-0">
+                                                <Package size={28} />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-lg text-gray-800">Order #{order.orderNumber}</p>
+                                                <div className="flex gap-4 text-sm text-gray-500 mt-1">
+                                                    <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                                                    <span>•</span>
+                                                    <span>{order.orderItems?.length} Items</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-8 md:text-right w-full md:w-auto justify-between md:justify-end">
+                                            <div>
+                                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                                    order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                                                        order.status === 'measurements_confirmed' ? 'bg-blue-100 text-blue-800' :
+                                                            'bg-yellow-100 text-yellow-800'
+                                                    }`}>
+                                                    {order.status.replace('_', ' ')}
+                                                </span>
+                                                <p className="font-bold text-xl text-gray-900 mt-2">₹{order.totalAmount}</p>
+                                            </div>
+                                            <Link
+                                                to={`/order/${order._id}`}
+                                                className="px-6 py-2 bg-brand-maroon text-white rounded-lg hover:bg-red-900 transition text-sm font-medium"
+                                            >
+                                                View Details
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center py-20">
+                                <Package size={48} className="mx-auto text-gray-300 mb-4" />
+                                <h3 className="text-lg font-medium text-gray-900">No Orders Yet</h3>
+                                <p className="text-gray-500 mb-6">Start browsing our collection to place your first order.</p>
+                                <a href="/designs" className="inline-block bg-brand-maroon text-white px-6 py-2 rounded-full hover:bg-red-900 transition">
+                                    Browse Designs
+                                </a>
+                            </div>
+                        )}
                     </div>
                 )}
 

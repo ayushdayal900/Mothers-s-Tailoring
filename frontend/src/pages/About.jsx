@@ -7,7 +7,7 @@ const About = () => {
     const { t } = useTranslation();
 
     return (
-        <div className="pt-20 lg:pt-32 pb-12 bg-gray-50 min-h-screen">
+        <div className="pt-20 pb-12 bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4">
 
                 {/* Hero Section */}
@@ -15,7 +15,7 @@ const About = () => {
                     <span className="text-brand-gold font-bold tracking-widest uppercase mb-2 block">Our Heritage</span>
                     <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-maroon mb-6">Weaving Tradition Since 2005</h1>
                     <p className="max-w-2xl mx-auto text-brand-charcoal text-lg">
-                        At Mahalxmi Tailors, we don't just stitch clothes; we craft heirlooms. Specialized in authentic Maharashtrian attire, we bring decades of mastery to every fold and stitch.
+                        At Mahalaxmi Tailors, we don't just stitch clothes; we craft heirlooms. Specialized in authentic Maharashtrian attire, we bring decades of mastery to every fold and stitch.
                     </p>
                 </div>
 
@@ -32,7 +32,7 @@ const About = () => {
                     <div>
                         <h2 className="text-3xl font-serif font-bold text-brand-maroon mb-4">The Master Tailor's Touch</h2>
                         <p className="text-gray-600 mb-4 leading-relaxed">
-                            Founded by [Name], Mahalxmi Tailors began as a small boutique in [City] with a singular vision: to preserve the elegance of the traditional Nauvari drape while adapting it for the modern woman.
+                            Founded by {t('hero.name')}, Mahalaxmi Tailors began as a small boutique in Mangrulpir with a singular vision: to preserve the elegance of the traditional Patals while adapting it for the modern woman.
                         </p>
                         <p className="text-gray-600 mb-6 leading-relaxed">
                             Over the years, we have served over 5,000 satisfied customers, earning recognition for our precision, culturally accurate styling, and ability to customize designs that flatter every silhouette.
@@ -49,7 +49,7 @@ const About = () => {
                                 <Users className="text-brand-gold shrink-0" />
                                 <div>
                                     <h4 className="font-bold text-gray-800">Expert Team</h4>
-                                    <p className="text-sm text-gray-500">Dedicated artisans with 20+ years exp.</p>
+                                    <p className="text-sm text-gray-500">Dedicated artisans & designers with 20+ years exp.</p>
                                 </div>
                             </div>
                         </div>

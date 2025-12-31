@@ -18,6 +18,7 @@ const OrderDetails = () => {
                 // Based on previous knowledge, getOrderById is likely in controller but route param might be different.
                 // Using standard REST pattern for now.
                 const res = await axios.get(`http://localhost:5000/api/orders/${id}`, config);
+                console.log("Order Details API Response:", res.data);
                 setOrder(res.data);
             } catch (error) {
                 console.error("Error fetching order details", error);
@@ -108,11 +109,15 @@ const OrderDetails = () => {
                             {order.orderItems.map((item, idx) => (
                                 <div key={idx} className="flex gap-4">
                                     <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                        {/* Ideally fetch product image, using placeholder if item details are shallow */}
-                                        <img src="https://via.placeholder.com/150" alt="Product" className="w-full h-full object-cover" />
+                                        {/* Display Product Image */}
+                                        <img
+                                            src={item.product?.images?.[0] || "https://via.placeholder.com/150"}
+                                            alt={item.product?.name || "Product"}
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-gray-800">Product ID: {item.product}</p> {/* Populate name if available */}
+                                        <p className="font-bold text-gray-800">{item.product?.name || "Unknown Product"}</p>
                                         <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                                         <p className="font-medium text-brand-maroon mt-1">₹{item.totalPrice}</p>
 
@@ -134,10 +139,10 @@ const OrderDetails = () => {
                                 <div className="flex items-start gap-3 text-gray-600">
                                     <MapPin className="mt-1 flex-shrink-0 text-brand-maroon" size={18} />
                                     <div className="text-sm leading-relaxed">
-                                        <p className="font-medium text-gray-900">{order.shippingAddress?.street}</p>
-                                        <p>{order.shippingAddress?.city}, {order.shippingAddress?.state}</p>
-                                        <p>{order.shippingAddress?.postalCode}</p>
-                                        <p>{order.shippingAddress?.country}</p>
+                                        <p className="font-medium text-gray-900">{order.deliveryAddress?.street}</p>
+                                        <p>{order.deliveryAddress?.city}, {order.deliveryAddress?.state}</p>
+                                        <p>{order.deliveryAddress?.postalCode}</p>
+                                        <p>{order.deliveryAddress?.country}</p>
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +151,11 @@ const OrderDetails = () => {
                                 <h3 className="font-bold text-gray-800 text-lg border-b pb-2 mb-4">Payment Info</h3>
                                 <div className="bg-green-50 text-green-700 p-4 rounded-lg flex justify-between items-center text-sm font-medium">
                                     <span>Method</span>
-                                    <span>Cash on Delivery</span>
+                                    <span>{order.paymentMethod || 'Online'}</span>
+                                </div>
+                                <div className={`mt-2 p-4 rounded-lg flex justify-between items-center text-sm font-medium ${order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-50 text-yellow-700'}`}>
+                                    <span>Status</span>
+                                    <span className="capitalize">{order.paymentStatus}</span>
                                 </div>
                             </div>
                         </div>

@@ -37,6 +37,7 @@ const Designs = () => {
                 }
                 setLoading(false);
             } catch (err) {
+                console.error("Error loading designs:", err);
                 setError('Failed to load designs. Please try again later.');
                 setLoading(false);
             }
@@ -59,18 +60,23 @@ const Designs = () => {
     };
 
     // Derived State
-    const filteredProducts = products
-        .filter(product => {
-            // Category Filter
-            const catName = product.category?.name || product.category; // Handle populated/unpopulated
-            if (selectedCategories.length > 0 && !selectedCategories.includes(catName)) return false;
+    const filteredProducts = products.filter(product => {
+        // Category Filter
+        const catName = product.category?.name || product.category;
+        if (selectedCategories.length > 0 && !selectedCategories.includes(catName)) {
+            return false;
+        }
 
-            // Price Filter
-            if (product.price < priceRange[0] || product.price > priceRange[1]) return false;
+        // Price Filter
+        const pPrice = Number(product.price || 0);
+        if (pPrice < priceRange[0] || pPrice > priceRange[1]) {
+            return false;
+        }
 
-            return true;
-        })
-        .sort(handleSort);
+        return true;
+    }).sort(handleSort);
+
+    // console.log("Total Products:", products.length, "Filtered Count:", filteredProducts.length);
 
     const categories = ['Rajlaxmi', 'Peshwai', 'Mastani', 'Normal'];
 
@@ -194,7 +200,12 @@ const Designs = () => {
                                 </div>
                             ))}
                         </div>
-                        {filteredProducts.length === 0 && (
+                        {products.length === 0 ? (
+                            <div className="text-center py-20 text-gray-500">
+                                <p className="text-xl font-serif mb-2">Our Collection is Coming Soon/Empty</p>
+                                <p>No designs have been added to the catalog yet.</p>
+                            </div>
+                        ) : filteredProducts.length === 0 && (
                             <div className="text-center py-20 text-gray-500">
                                 <p>No designs match your filters.</p>
                                 <button onClick={() => { setSelectedCategories([]); setPriceRange([0, 25000]); }} className="text-brand-maroon underline mt-2">Clear Filters</button>

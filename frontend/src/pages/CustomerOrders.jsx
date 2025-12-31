@@ -85,9 +85,9 @@ const CustomerOrders = () => {
                                         <div className="space-y-2">
                                             {order.orderItems.map((item, index) => (
                                                 <div key={index} className="flex justify-between items-center text-sm">
-                                                    <span className="text-gray-800">{item.quantity} x Product ID: {item.product}</span> {/* Ideally populate product name */}
-                                                    {/* Note: product details might not be populated in list view for performance, 
-                                                         or we can update getMyOrders to populate 'orderItems.product' */}
+                                                    <span className="text-gray-800">
+                                                        {item.product?.name || `Product ID: ${item.product}`} x {item.quantity}
+                                                    </span>
                                                     <span className="text-gray-600">₹{item.totalPrice}</span>
                                                 </div>
                                             ))}

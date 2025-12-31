@@ -6,7 +6,7 @@ const CMS = require('../models/CMS');
 exports.getCMSItems = async (req, res) => {
     try {
         const { type } = req.params;
-        const items = await CMS.find({ type, isActive: true }).sort({ order: 1, createdAt: -1 });
+        const items = await CMS.find({ type, isActive: true }).sort({ createdAt: -1 });
         res.json(items);
     } catch (error) {
         res.status(500).json({ message: 'Server Error' });
@@ -19,7 +19,7 @@ exports.getCMSItems = async (req, res) => {
 exports.getAdminCMSItems = async (req, res) => {
     try {
         const { type } = req.params;
-        const items = await CMS.find({ type }).sort({ order: 1, createdAt: -1 });
+        const items = await CMS.find({ type }).sort({ createdAt: -1 });
         res.json(items);
     } catch (error) {
         res.status(500).json({ message: 'Server Error' });

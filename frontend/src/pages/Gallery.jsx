@@ -18,7 +18,7 @@ const Gallery = () => {
     const categories = ['All', 'Rajlaxmi', 'Peshwai', 'Mastani', 'Normal'];
 
     return (
-        <div className="pt-20 lg:pt-32 pb-12 bg-gray-50 min-h-screen">
+        <div className="pt-20 pb-12 bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-serif font-bold text-brand-maroon mb-4">Customer Gallery</h1>
@@ -32,8 +32,8 @@ const Gallery = () => {
                             key={cat}
                             onClick={() => setFilter(cat)}
                             className={`px-6 py-2 rounded-full border transition ${filter === cat
-                                    ? 'bg-brand-maroon text-white border-brand-maroon'
-                                    : 'bg-white text-gray-600 border-gray-300 hover:border-brand-maroon'
+                                ? 'bg-brand-maroon text-white border-brand-maroon'
+                                : 'bg-white text-gray-600 border-gray-300 hover:border-brand-maroon'
                                 }`}
                         >
                             {cat}

@@ -18,7 +18,7 @@ const Contact = () => {
     };
 
     return (
-        <div className="pt-20 lg:pt-32 pb-12 bg-gray-50 min-h-screen">
+        <div className="pt-20 pb-12 bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
                     <h1 className="text-4xl font-serif font-bold text-brand-maroon mb-4">Get in Touch</h1>

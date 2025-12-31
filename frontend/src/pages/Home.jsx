@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Layout/Header';
 import { Scissors, Ruler, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 
 // Import Assets
 import fabricTexture from '../assets/fabric_texture.png';
@@ -14,7 +15,7 @@ const Hero = () => {
     const { t } = useTranslation();
 
     return (
-        <div className="relative py-20 lg:py-32 overflow-hidden">
+        <div className="relative py-12 lg:py-16 overflow-hidden">
             {/* Texture Background Overlay */}
             <div
                 className="absolute inset-0 opacity-40 z-0 pointer-events-none mix-blend-multiply"
@@ -25,13 +26,13 @@ const Hero = () => {
             ></div>
 
             {/* Paisley Border Top */}
-            <div className="absolute top-0 left-0 w-full h-16 opacity-30 z-10 pointer-events-none"
+            <div className="absolute top-0 left-0 w-full h-10 opacity-30 z-10 pointer-events-none"
                 style={{ backgroundImage: `url(${paisleyBorder})`, backgroundSize: 'contain', backgroundRepeat: 'repeat-x' }}>
             </div>
 
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-20">
                 <div className="md:w-1/2 text-center md:text-left">
-                    <h1 className="text-5xl md:text-7xl font-serif font-bold text-brand-maroon mb-6 leading-tight drop-shadow-sm">
+                    <h1 className="text-5xl md:text-6xl font-serif font-semibold text-brand-maroon mb-5 leading-snug">
                         {t('hero.title')} <br />
                         <span className="text-brand-teal italic">{t('hero.name')}</span>
                     </h1>
@@ -42,8 +43,8 @@ const Hero = () => {
                         <button className="bg-brand-maroon text-white px-8 py-3 rounded-xl text-lg font-medium shadow-xl hover:bg-red-900 transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-brand-gold">
                             {t('hero.ctaExplore')}
                         </button>
-                        <button className="border-2 border-brand-maroon text-brand-maroon px-8 py-3 rounded-xl text-lg font-medium hover:bg-brand-maroon hover:text-white transition duration-300 focus:outline-none focus:ring-2 focus:ring-brand-maroon">
-                            {t('hero.ctaCustom')} <span className="font-marathi ml-1">{t('hero.ctaCustomMarathi')}</span>
+                        <button className="bg-brand-maroon text-white px-8 py-3 rounded-xl text-lg font-medium shadow-xl hover:bg-red-900 transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-brand-gold">
+                            {t('hero.ctaCustom')}
                         </button>
                     </div>
                     <span className="font-bold tracking-widest uppercase mt-20  mb-4 block text-lg md:text-xl" style={{ color: "#98349aff" }}>
@@ -53,7 +54,7 @@ const Hero = () => {
                 </div>
 
                 {/* Illustration Side */}
-                <div className="md:w-1/2 mt-12 md:mt-0 relative flex justify-center">
+                <div className="md:w-1/2 mt-10 md:mt-0 relative flex justify-center transform -translate-y-6">
                     <div className="relative w-80 h-[28rem] md:w-96 md:h-[32rem] bg-brand-ivory rounded-t-full rounded-b-xl shadow-2xl overflow-hidden border-4 border-brand-gold/30 p-4">
                         <img src={sareeSketch} alt="Traditional Saree Sketch" className="w-full h-full object-cover rounded-t-full rounded-b-lg opacity-90 sepia-[.2] hover:scale-105 transition duration-700" />
 
@@ -65,8 +66,8 @@ const Hero = () => {
                     </div>
 
                     {/* Floating Decorative Elements */}
-                    <div className="absolute -z-10 top-10 right-10 w-64 h-64 bg-brand-gold rounded-full opacity-10 blur-3xl"></div>
-                    <div className="absolute -z-10 bottom-10 left-10 w-72 h-72 bg-brand-teal rounded-full opacity-10 blur-3xl"></div>
+                    {/* <div className="absolute -z-10 top-10 right-10 w-64 h-64 bg-brand-gold rounded-full opacity-10 blur-3xl"></div> */}
+                    {/* <div className="absolute -z-10 bottom-10 left-10 w-72 h-72 bg-brand-teal rounded-full opacity-10 blur-3xl"></div> */}
                 </div>
             </div>
         </div>
@@ -85,6 +86,19 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 
 const Home = () => {
     const { t } = useTranslation();
+    const [testimonials, setTestimonials] = useState([]);
+
+    useEffect(() => {
+        const fetchTestimonials = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/api/cms/testimonial');
+                setTestimonials(res.data);
+            } catch (error) {
+                console.error("Error fetching testimonials", error);
+            }
+        };
+        fetchTestimonials();
+    }, []);
 
     return (
         <>
@@ -155,24 +169,27 @@ const Home = () => {
             {/* Testimonials Section */}
             <section className="py-24 bg-brand-maroon text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-                <div className="container mx-auto px-4 relative z-10">
-                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-center mb-16">Stories of Elegance</h2>
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {[
-                            { name: "Priya D.", role: "Bride", quote: "The Paithani stitching was flawless. It made my wedding day perfect!" },
-                            { name: "Anjali K.", role: "Regular Customer", quote: "Authentic designs that fit perfectly every single time." },
-                            { name: "Sneha M.", role: "Festive Wear", quote: "The Mastani fusion gown was the highlight of the evening." }
-                        ].map((testi, idx) => (
-                            <div key={idx} className="bg-white/10 backdrop-blur p-8 rounded-xl border border-white/20 hover:bg-white/20 transition">
-                                <div className="text-brand-gold text-4xl font-serif mb-4">"</div>
-                                <p className="text-lg italic mb-6 font-light">{testi.quote}</p>
-                                <div>
-                                    <h4 className="font-bold text-xl">{testi.name}</h4>
-                                    <span className="text-sm text-brand-gold uppercase tracking-wider">{testi.role}</span>
+                <div className="container mx-auto px-4 relative z-10 overflow-hidden">
+                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-center mb-16 text-brand-gold">Customer Reviews</h2>
+
+                    {testimonials.length > 0 ? (
+                        <div className="flex w-[200%] animate-scroll hover:pause">
+                            {[...testimonials, ...testimonials].map((testi, idx) => (
+                                <div key={idx} className="w-[300px] md:w-[400px] flex-shrink-0 mx-4 bg-white/10 backdrop-blur p-8 rounded-xl border border-white/20 hover:bg-white/20 transition cursor-default">
+                                    <div className="text-brand-gold text-4xl font-serif mb-4">"</div>
+                                    <p className="text-lg italic mb-6 font-light text-white leading-relaxed line-clamp-3">
+                                        "{testi.content}"
+                                    </p>
+                                    <div>
+                                        <h4 className="font-bold text-xl text-brand-beige">{testi.author}</h4>
+                                        <span className="text-sm text-brand-gold uppercase tracking-wider">{testi.role}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-brand-beige/50">Loading reviews...</p>
+                    )}
                 </div>
             </section>
 

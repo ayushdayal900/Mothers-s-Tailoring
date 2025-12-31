@@ -13,7 +13,8 @@ const Checkout = () => {
     const [addresses, setAddresses] = useState([]);
     const [measurements, setMeasurements] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null);
-    const [selectedMeasurement, setSelectedMeasurement] = useState(null); // Assuming one profile for now, but logical expansion
+    const [selectedMeasurement, setSelectedMeasurement] = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState('Online'); // Default to Online
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -82,7 +83,8 @@ const Checkout = () => {
                 })),
                 deliveryAddress: selectedAddress,
                 measurementProfileId: selectedMeasurement,
-                totalAmount: cartTotal
+                totalAmount: cartTotal,
+                paymentMethod: paymentMethod // Pass selected method
             };
 
             const orderRes = await axios.post('http://localhost:5000/api/orders', orderData, config);
@@ -90,6 +92,15 @@ const Checkout = () => {
 
             if (!localOrder || !localOrder._id) throw new Error("Order creation failed");
 
+            // Handle COD Flow
+            if (paymentMethod === 'COD') {
+                alert("Order Placed Successfully via Cash on Delivery!");
+                clearCart();
+                navigate(`/order/${localOrder._id}`);
+                return;
+            }
+
+            // Handle Online Payment Flow (Razorpay)
             // 2. Load Razorpay SDK
             const res = await loadRazorpay();
             if (!res) {
@@ -98,7 +109,6 @@ const Checkout = () => {
             }
 
             // 3. Create Razorpay Order
-            // Updated: Backend now expects just orderId and calculates amount itself for security
             const paymentRes = await axios.post('http://localhost:5000/api/payments/create-order', {
                 orderId: localOrder._id
             }, config);
@@ -227,8 +237,45 @@ const Checkout = () => {
                                     <button onClick={() => navigate('/customer/dashboard')} className="text-brand-maroon underline">Create Profile</button>
                                 </div>
                             )}
-                        </div>
+                            {/* 3. Payment Method */}
+                            <div className="bg-white p-6 rounded-xl shadow-sm">
+                                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <CreditCard className="text-brand-gold" /> Payment Method
+                                </h2>
+                                <div className="space-y-3">
+                                    <div
+                                        onClick={() => setPaymentMethod('Online')}
+                                        className={`p-4 border-2 rounded-lg cursor-pointer flex items-center justify-between transition ${paymentMethod === 'Online' ? 'border-brand-maroon bg-red-50' : 'border-gray-200'}`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${paymentMethod === 'Online' ? 'border-brand-maroon' : 'border-gray-400'}`}>
+                                                {paymentMethod === 'Online' && <div className="w-3 h-3 bg-brand-maroon rounded-full"></div>}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-gray-800">Online Payment</p>
+                                                <p className="text-xs text-gray-500">Credit/Debit Card, UPI, Netbanking (Razorpay)</p>
+                                            </div>
+                                        </div>
+                                        <div className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">FAST</div>
+                                    </div>
 
+                                    <div
+                                        onClick={() => setPaymentMethod('COD')}
+                                        className={`p-4 border-2 rounded-lg cursor-pointer flex items-center justify-between transition ${paymentMethod === 'COD' ? 'border-brand-maroon bg-red-50' : 'border-gray-200'}`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${paymentMethod === 'COD' ? 'border-brand-maroon' : 'border-gray-400'}`}>
+                                                {paymentMethod === 'COD' && <div className="w-3 h-3 bg-brand-maroon rounded-full"></div>}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-gray-800">Cash on Delivery</p>
+                                                <p className="text-xs text-gray-500">Pay when you receive your order</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Right Column: Order Summary */}
@@ -253,9 +300,15 @@ const Checkout = () => {
                                 disabled={loading}
                                 className="w-full bg-brand-maroon text-white py-3 rounded-lg font-bold hover:bg-red-900 transition disabled:bg-gray-400 flex items-center justify-center gap-2"
                             >
-                                {loading ? 'Processing...' : <><CreditCard size={20} /> Pay Now</>}
+                                {loading ? 'Processing...' : (
+                                    paymentMethod === 'COD' ?
+                                        <><Check size={20} /> Confirm Cash on Delivery</> :
+                                        <><CreditCard size={20} /> Pay Now</>
+                                )}
                             </button>
-                            <p className="text-xs text-center text-gray-400 mt-4">Secure payment via Razorpay</p>
+                            <p className="text-xs text-center text-gray-400 mt-4">
+                                {paymentMethod === 'COD' ? 'Pay upon receipt of your order' : 'Secure payment via Razorpay'}
+                            </p>
                         </div>
                     </div>
                 </div>

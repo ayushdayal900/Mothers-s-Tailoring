@@ -74,7 +74,7 @@ app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/cms', cmsRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Mother\'s Tailoring API is running...');
+    res.send('Mahalaxmi Tailoring API is running...');
 });
 
 // Error Handler

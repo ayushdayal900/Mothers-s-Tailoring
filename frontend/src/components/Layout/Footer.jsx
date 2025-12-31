@@ -51,15 +51,15 @@ const Footer = () => {
                         <ul className="space-y-3 text-sm opacity-80">
                             <li className="flex items-start gap-3">
                                 <MapPin size={18} className="text-brand-gold shrink-0 mt-1" aria-hidden="true" />
-                                <span>Shop No. 4, Laxmi Road,<br />Pune, Maharashtra 411030</span>
+                                <span>Kalyani Chawk, Balaji Mandir,<br />Mangrulpir, Maharashtra 444403</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone size={18} className="text-brand-gold shrink-0" aria-hidden="true" />
-                                <span>+91 98765 43210</span>
+                                <span>+91 9834565912</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Mail size={18} className="text-brand-gold shrink-0" aria-hidden="true" />
-                                <span>hello@motherstailoring.com</span>
+                                <span>jayashridayal1@gmail.com</span>
                             </li>
                         </ul>
                     </div>

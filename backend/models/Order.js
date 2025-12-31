@@ -60,6 +60,11 @@ const orderSchema = new mongoose.Schema({
         postalCode: String,
         country: String,
     },
+    paymentMethod: {
+        type: String,
+        enum: ['COD', 'Online'],
+        default: 'Online'
+    },
     // We can store a snapshot or reference an address ID. Storing snapshot is better for history.
     measurementProfile: {
         type: mongoose.Schema.Types.ObjectId,

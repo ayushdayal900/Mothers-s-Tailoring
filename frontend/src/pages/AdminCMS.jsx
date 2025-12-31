@@ -176,7 +176,7 @@ const AdminCMS = () => {
                                         </div>
                                         <div className="p-4 bg-white">
                                             <h3 className="font-bold text-gray-800">{item.title}</h3>
-                                            <p className="text-sm text-gray-500">Order: {item.order} • {item.isActive ? 'Active' : 'Inactive'}</p>
+                                            <p className="text-sm text-gray-500">{item.isActive ? 'Active' : 'Inactive'}</p>
                                         </div>
                                     </>
                                 )}
@@ -280,10 +280,7 @@ const AdminCMS = () => {
                                 )}
 
                                 <div className="flex gap-4">
-                                    <div className="flex-1">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Order Priority</label>
-                                        <input type="number" className="w-full p-2 border rounded-lg" value={formData.order} onChange={e => setFormData({ ...formData, order: e.target.value })} />
-                                    </div>
+                                    <div className="flex-1"></div>
                                     <div className="flex items-center pt-6">
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({ ...formData, isActive: e.target.checked })} />

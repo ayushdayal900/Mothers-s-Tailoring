@@ -12,6 +12,7 @@ exports.createOrder = async (req, res) => {
             measurementProfileId,
             totalAmount,
             specialNotes,
+            paymentMethod
         } = req.body;
 
         if (orderItems && orderItems.length === 0) {
@@ -21,6 +22,23 @@ exports.createOrder = async (req, res) => {
         // Generate Order Number
         const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
+        // Determine initial status based on payment method
+        let orderStatus = 'pending';
+        let timeline = [{
+            status: 'pending',
+            notes: 'Order placed by customer',
+            changedAt: Date.now()
+        }];
+
+        if (paymentMethod === 'COD') {
+            orderStatus = 'measurements_confirmed';
+            timeline.push({
+                status: 'measurements_confirmed',
+                notes: 'Auto-confirmed for COD',
+                changedAt: Date.now()
+            });
+        }
+
         const order = new Order({
             orderNumber,
             customer: req.user.id,
@@ -29,11 +47,9 @@ exports.createOrder = async (req, res) => {
             deliveryAddress,
             measurementProfile: measurementProfileId,
             specialNotes,
-            statusTimeline: [{
-                status: 'pending',
-                notes: 'Order placed by customer',
-                changedAt: Date.now()
-            }]
+            paymentMethod,
+            status: orderStatus,
+            statusTimeline: timeline
         });
 
         const createdOrder = await order.save();
@@ -50,7 +66,9 @@ exports.createOrder = async (req, res) => {
 // @access  Private
 exports.getMyOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ customer: req.user.id }).sort({ createdAt: -1 });
+        const orders = await Order.find({ customer: req.user.id })
+            .populate('orderItems.product')
+            .sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {
         console.error(error);

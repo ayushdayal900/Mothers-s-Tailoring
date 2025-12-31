@@ -44,7 +44,7 @@ const Register = () => {
                         Create an Account
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Join Mother's Tailoring for exclusive designs
+                        Join Mahalaxmi Tailoring for exclusive designs
                     </p>
                 </div>
 

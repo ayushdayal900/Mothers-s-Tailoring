@@ -6,14 +6,25 @@ const AdminPayments = () => {
     // Fetch generic orders for now and filter, or use a specific payments endpoint. 
     // Filtering local orders for 'paymentStatus' is easiest for immediate implementation.
     const [payments, setPayments] = useState([]);
+    const [stats, setStats] = useState({ totalRevenue: 0, pendingPayments: 0 });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchPayments = async () => {
-            // Mock for UI demonstration
-            setPayments([
-                { _id: '101', orderNumber: 'ORD-001', customer: 'Priya Sharma', amount: 3500, status: 'paid', date: '2023-10-01' },
-                { _id: '102', orderNumber: 'ORD-005', customer: 'Anita Desai', amount: 800, status: 'pending', date: '2023-10-05' },
-            ]);
+            try {
+                const token = localStorage.getItem('token');
+                const config = { headers: { Authorization: `Bearer ${token}` } };
+                const { data } = await axios.get('http://localhost:5000/api/admin/payments', config);
+                setPayments(data.transactions);
+                setStats({
+                    totalRevenue: data.totalRevenue,
+                    pendingPayments: data.pendingPayments
+                });
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching payments:", error);
+                setLoading(false);
+            }
         };
         fetchPayments();
     }, []);
@@ -34,11 +45,11 @@ const AdminPayments = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                     <p className="text-gray-500 text-sm">Total Revenue</p>
-                    <h3 className="text-2xl font-bold text-gray-900 mt-1">₹45,200</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mt-1">₹{stats.totalRevenue?.toLocaleString()}</h3>
                 </div>
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                     <p className="text-gray-500 text-sm">Pending Payments</p>
-                    <h3 className="text-2xl font-bold text-orange-600 mt-1">₹3,400</h3>
+                    <h3 className="text-2xl font-bold text-orange-600 mt-1">₹{stats.pendingPayments?.toLocaleString()}</h3>
                 </div>
             </div>
 
@@ -61,7 +72,7 @@ const AdminPayments = () => {
                                 <td className="px-6 py-4 font-medium text-gray-900">{pay.orderNumber}</td>
                                 <td className="px-6 py-4 text-gray-600">{pay.customer}</td>
                                 <td className="px-6 py-4 font-bold">₹{pay.amount}</td>
-                                <td className="px-6 py-4 text-sm text-gray-500">{pay.date}</td>
+                                <td className="px-6 py-4 text-sm text-gray-500">{new Date(pay.date).toLocaleDateString()}</td>
                                 <td className="px-6 py-4">{getStatusBadge(pay.status)}</td>
                             </tr>
                         ))}

@@ -9,15 +9,37 @@ const AdminCustomers = () => {
     // I previously implemented getAllUsers in userController? Let's check userController. 
     // Assuming standard behavior:
     const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch users with role 'customer'
-        // Mocking logic for now to show UI structure
-        setCustomers([
-            { _id: '1', firstName: 'Priya', lastName: 'Sharma', email: 'priya@example.com', phone: '9876543210', orderCount: 5, totalSpent: 12000, joinedAt: '2023-01-15' },
-            { _id: '2', firstName: 'Anita', lastName: 'Desai', email: 'anita@example.com', phone: '9123456780', orderCount: 2, totalSpent: 4500, joinedAt: '2023-03-20' },
-        ]);
+        const fetchCustomers = async () => {
+            try {
+                // Get token from localStorage
+                const token = localStorage.getItem('token');
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                };
+
+                const { data } = await axios.get('http://localhost:5000/api/admin/customers', config);
+                setCustomers(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching customers:", error.response?.data?.message || error.message);
+                if (error.response?.status === 401) {
+                    alert("Session expired or unauthorized. Please login as Admin.");
+                    // Optional: redirect to login
+                    // window.location.href = '/login';
+                }
+                setLoading(false);
+            }
+        };
+
+        fetchCustomers();
     }, []);
+
+    if (loading) return <div className="p-8 text-center">Loading customers...</div>;
 
     return (
         <div className="p-8 bg-gray-50 min-h-screen">
@@ -58,7 +80,7 @@ const AdminCustomers = () => {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 font-medium">₹{customer.totalSpent}</td>
-                                <td className="px-6 py-4 text-sm text-gray-500">{new Date(customer.joinedAt).toLocaleDateString()}</td>
+                                <td className="px-6 py-4 text-sm text-gray-500">{new Date(customer.createdAt).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 text-right">
                                     <button className="text-brand-maroon hover:underline text-sm font-medium">View History</button>
                                 </td>

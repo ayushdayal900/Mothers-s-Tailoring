@@ -145,3 +145,81 @@ exports.updateOrderStatus = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Get All Customers (with stats)
+// @route   GET /api/admin/customers
+// @access  Private/Admin
+exports.getAllCustomers = async (req, res) => {
+    try {
+        const customers = await User.aggregate([
+            { $match: { role: 'customer' } },
+            {
+                $lookup: {
+                    from: 'orders',
+                    localField: '_id',
+                    foreignField: 'customer',
+                    as: 'orders'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    email: 1,
+                    phone: 1,
+                    createdAt: 1,
+                    orderCount: { $size: "$orders" },
+                    totalSpent: { $sum: "$orders.totalAmount" }
+                }
+            },
+            { $sort: { createdAt: -1 } }
+        ]);
+
+        res.json(customers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get All Payments/Transactions
+// @route   GET /api/admin/payments
+// @access  Private/Admin
+exports.getAllPayments = async (req, res) => {
+    try {
+        // Fetch orders that have any payment activity (paid or pending)
+        const orders = await Order.find()
+            .populate('customer', 'firstName lastName email')
+            .sort({ createdAt: -1 });
+
+        // Calculate Totals
+        const totalRevenue = orders
+            .filter(o => o.paymentStatus === 'paid')
+            .reduce((acc, o) => acc + o.totalAmount, 0);
+
+        const pendingPayments = orders
+            .filter(o => o.paymentStatus === 'pending')
+            .reduce((acc, o) => acc + o.totalAmount, 0);
+
+        // Map to standard transaction format
+        const transactions = orders.map(order => ({
+            _id: order._id, // Using Order ID as Transaction ID reference for now
+            orderNumber: order.orderNumber,
+            customer: `${order.customer?.firstName} ${order.customer?.lastName}`,
+            amount: order.totalAmount,
+            date: order.createdAt,
+            status: order.paymentStatus,
+            paymentMethod: order.paymentMethod
+        }));
+
+        res.json({
+            totalRevenue,
+            pendingPayments,
+            transactions
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};

@@ -1,8 +1,8 @@
 {
   "brand": {
-    "name": "Mother's",
+    "name": "Mahalaxmi",
     "suffix": "Tailoring",
-    "since": "Since 1995 • 20+ Years of Tradition"
+    "since": "Since 2004 • 20+ Years of Tradition"
   },
   "nav": {
     "home": "Home",
@@ -15,7 +15,7 @@
     "bookAppointment": "Book Appointment"
   },
   "hero": {
-    "title": "Handcrafted by",
+    "title": "Grace softly dressed, Patal at its best.",
     "description": "Specializing in custom Paithani stitching, Rajlaxmi designs, and royal Mastani drapes. Experience the art of perfect fitting with a touch of elegance.",
     "ctaExplore": "Explore Designs",
     "ctaCustom": "Custom Stitching",
@@ -23,8 +23,14 @@
     "designLabel": "The Master Tailor - ",
     "name": "Jayashri Dayal"
   },
+  "home": {
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Your journey to the perfect outfit in 5 simple steps."
+    }
+  },
   "features": {
-    "title": "Why Choose Mother's Tailoring?",
+    "title": "Why Choose Mahalaxmi Tailoring?",
     "subtitle": "We combine decades of tradition with modern precision to create garments that aren't just stitched, but crafted for you.",
     "fit": {
       "title": "Perfect Fit Guarantee",
@@ -56,6 +62,6 @@
       "account": "My Account",
       "admin": "Admin"
     },
-    "copyright": "© {{year}} Mother's Tailoring Boutique. All rights reserved."
+    "copyright": "© {{year}} Mahalaxmi Tailoring Boutique. All rights reserved."
   }
 }
