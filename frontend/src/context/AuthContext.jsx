@@ -31,6 +31,56 @@ export const AuthProvider = ({ children }) => {
         loadUser();
     }, [token]);
 
+    // Inactivity Tracker
+    useEffect(() => {
+        if (!user) return; // Only track if user is logged in
+
+        const INACTIVITY_LIMIT = 30 * 1000; // 30 seconds for testing
+
+        const updateActivity = () => {
+            // Simple throttling: only update if 1 second has passed since last update
+            const now = Date.now();
+            const lastUpdate = parseInt(localStorage.getItem('lastActivity') || '0', 10);
+            if (now - lastUpdate > 1000) {
+                localStorage.setItem('lastActivity', now.toString());
+            }
+        };
+
+        const checkInactivity = () => {
+            const lastActivity = localStorage.getItem('lastActivity');
+            if (lastActivity) {
+                const diff = Date.now() - parseInt(lastActivity, 10);
+                if (diff > INACTIVITY_LIMIT) {
+                    console.log('User inactive for too long, logging out...');
+                    logout();
+                    alert('You have been logged out due to inactivity.');
+                }
+            } else {
+                localStorage.setItem('lastActivity', Date.now().toString());
+            }
+        };
+
+        // Listeners for activity
+        window.addEventListener('mousemove', updateActivity);
+        window.addEventListener('keydown', updateActivity);
+        window.addEventListener('click', updateActivity);
+        window.addEventListener('scroll', updateActivity);
+
+        // Check every second (for precise 30s testing)
+        const intervalId = setInterval(checkInactivity, 1000);
+
+        // Initial check on mount/login
+        localStorage.setItem('lastActivity', Date.now().toString());
+
+        return () => {
+            window.removeEventListener('mousemove', updateActivity);
+            window.removeEventListener('keydown', updateActivity);
+            window.removeEventListener('click', updateActivity);
+            window.removeEventListener('scroll', updateActivity);
+            clearInterval(intervalId);
+        };
+    }, [user]); // Re-run when user status changes
+
     // Login
     const login = async (email, password) => {
         try {

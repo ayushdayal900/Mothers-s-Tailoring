@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { MessageCircle, X, Send, ShoppingBag, MapPin, User, LayoutDashboard, Database } from 'lucide-react';
+import { MessageCircle, X, Send, ShoppingBag, MapPin, User, LayoutDashboard, Database, UserPlus, LogIn, Phone, Globe } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import { CartContext } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const ChatWidget = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,7 @@ const ChatWidget = () => {
     const { user, token } = useContext(AuthContext);
     const { addToCart } = useContext(CartContext);
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -34,12 +36,32 @@ const ChatWidget = () => {
         const newMessages = [...messages, { type: 'user', text }];
         setMessages(newMessages);
         setInputValue('');
-        setLoading(true);
         setSuggestedActions(null); // Clear previous suggestions
+
+        // Intercept Local Commands
+        if (text.startsWith('navigate:')) {
+            const path = text.split(':')[1];
+            setLoading(true);
+            setTimeout(() => {
+                setLoading(false);
+                setMessages(prev => [...prev, { type: 'bot', text: `Navigating to ${path.replace('/', '')}...` }]);
+                navigate(path);
+            }, 800);
+            return;
+        }
+
+        if (text === 'action:toggleLanguage') {
+            const newLang = i18n.language === 'en' ? 'mr' : 'en';
+            i18n.changeLanguage(newLang);
+            setMessages(prev => [...prev, { type: 'bot', text: `Language changed to ${newLang === 'en' ? 'English' : 'Marathi'}` }]);
+            return;
+        }
+
+        setLoading(true);
 
         try {
             if (!token) {
-                setMessages([...newMessages, { type: 'bot', text: "Please login to use the chatbot features." }]);
+                setMessages([...newMessages, { type: 'bot', text: "Please login to use the full chatbot features." }]);
                 setLoading(false);
                 return;
             }
@@ -95,17 +117,33 @@ const ChatWidget = () => {
         }
     };
 
-    const defaultActions = user?.role === 'admin' ? [
-        { label: 'Total Sales', icon: <Database size={14} />, cmd: 'Show total sales' },
-        { label: 'Pending Orders', icon: <ShoppingBag size={14} />, cmd: 'Show pending orders' },
-        { label: 'CMS', icon: <LayoutDashboard size={14} />, cmd: 'Open CMS' },
-    ] : [
-        { label: 'Track Order', icon: <MapPin size={14} />, cmd: 'Track my order' },
-        { label: 'Shop Sarees', icon: <ShoppingBag size={14} />, cmd: 'Show me designs' },
-        { label: 'Contact Us', icon: <User size={14} />, cmd: 'Contact store' },
-    ];
+    const getActions = () => {
+        if (!user) {
+            return [
+                { label: 'Signup', icon: <UserPlus size={14} />, cmd: 'navigate:/register' },
+                { label: 'Login', icon: <LogIn size={14} />, cmd: 'navigate:/login' },
+                { label: 'Explore Designs', icon: <ShoppingBag size={14} />, cmd: 'navigate:/designs' },
+                { label: 'Contact', icon: <Phone size={14} />, cmd: 'navigate:/contact' },
+                { label: 'Change Language', icon: <Globe size={14} />, cmd: 'action:toggleLanguage' },
+            ];
+        }
 
-    const currentActions = suggestedActions || defaultActions;
+        if (user.role === 'admin') {
+            return [
+                { label: 'Total Sales', icon: <Database size={14} />, cmd: 'Show total sales' },
+                { label: 'Pending Orders', icon: <ShoppingBag size={14} />, cmd: 'Show pending orders' },
+                { label: 'CMS', icon: <LayoutDashboard size={14} />, cmd: 'Open CMS' },
+            ];
+        }
+
+        return [
+            { label: 'Track Order', icon: <MapPin size={14} />, cmd: 'Track my order' },
+            { label: 'Shop Sarees', icon: <ShoppingBag size={14} />, cmd: 'Show me designs' },
+            { label: 'Contact Us', icon: <User size={14} />, cmd: 'Contact store' },
+        ];
+    };
+
+    const currentActions = suggestedActions || getActions();
 
     return (
         <div className="fixed bottom-6 right-6 z-50 font-sans">
