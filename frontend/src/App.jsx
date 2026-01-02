@@ -34,7 +34,7 @@ const AdminCMS = lazy(() => import('./pages/AdminCMS'));
 const AdminCustomers = lazy(() => import('./pages/AdminCustomers'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
-const AdminMeetings = lazy(() => import('./pages/Admin/AdminMeetings'));
+const AdminMeetings = lazy(() => import('./pages/admin/AdminMeetings'));
 const CustomerOrders = lazy(() => import('./pages/CustomerOrders'));
 const OrderDetails = lazy(() => import('./pages/OrderDetails'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
