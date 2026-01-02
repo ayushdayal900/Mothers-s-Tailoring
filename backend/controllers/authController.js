@@ -63,7 +63,8 @@ exports.registerUser = async (req, res) => {
                 lastName: user.lastName,
                 email: user.email,
                 role: user.role,
-                token: accessToken, // Frontend uses this for API calls
+                token: accessToken, // Frontend API token
+                refreshToken: refreshToken, // Fallback for localStorage
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
@@ -97,6 +98,7 @@ exports.loginUser = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 token: accessToken,
+                refreshToken: refreshToken,
             });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
@@ -108,16 +110,22 @@ exports.loginUser = async (req, res) => {
 };
 
 // @desc    Refresh Access Token
-// @route   GET /api/auth/refresh
-// @access  Public (Validates Cookie)
+// @route   POST /api/auth/refresh
+// @access  Public (Validates Cookie or Body)
 exports.refresh = async (req, res) => {
     const cookies = req.cookies;
-    console.log('DEBUG: Refresh Route Hit. Origin:', req.headers.origin);
-    console.log('DEBUG: Cookies received:', cookies ? Object.keys(cookies) : 'None');
+    console.log('DEBUG: Refresh Route Hit');
+    // console.log('DEBUG: Cookies:', cookies ? Object.keys(cookies) : 'None');
 
-    if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized - No Cookie' });
+    let refreshToken = cookies?.jwt;
 
-    const refreshToken = cookies.jwt;
+    // Fallback: Check body if cookie is missing
+    if (!refreshToken && req.body.refreshToken) {
+        // console.log('DEBUG: Using Refresh Token from Body');
+        refreshToken = req.body.refreshToken;
+    }
+
+    if (!refreshToken) return res.status(401).json({ message: 'Unauthorized - No Refresh Token' });
 
     try {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'refreshSecret123');

@@ -21,15 +21,14 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                // 1. Try to get new access token via refresh cookie
-                const res = await api.get('/auth/refresh');
+                // 1. Try to get new access token via refresh token (Cookie or Body)
+                const storedRefreshToken = localStorage.getItem('refreshToken');
+                // Use POST for refresh to support body payload
+                const res = await api.post('/auth/refresh', { refreshToken: storedRefreshToken });
+
                 setToken(res.data.token);
 
                 // 2. Load user data
-                // The token won't be in api.defaults yet for this specific call unless we set it manually or rely on interceptor?
-                // Actually, setting state is async. 
-                // We can pass the token purely for this call or just wait for effect?
-                // Safer: manually set header for this call
                 api.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
                 const userRes = await api.get('/auth/me');
                 setUser(userRes.data);
@@ -39,6 +38,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(null);
                 // Clear any leftover junk
                 localStorage.removeItem('token');
+                localStorage.removeItem('refreshToken');
             } finally {
                 setLoading(false);
             }
@@ -103,6 +103,7 @@ export const AuthProvider = ({ children }) => {
             const res = await api.post('/auth/login', { email, password });
             setToken(res.data.token);
             setUser(res.data);
+            if (res.data.refreshToken) localStorage.setItem('refreshToken', res.data.refreshToken); // Save Refresh Token
             localStorage.setItem('lastActivity', Date.now().toString());
             return { success: true, role: res.data.role };
         } catch (error) {
@@ -116,6 +117,7 @@ export const AuthProvider = ({ children }) => {
             const res = await api.post('/auth/register', userData);
             setToken(res.data.token);
             setUser(res.data);
+            if (res.data.refreshToken) localStorage.setItem('refreshToken', res.data.refreshToken); // Save Refresh Token
             localStorage.setItem('lastActivity', Date.now().toString());
             return { success: true };
         } catch (error) {
@@ -134,6 +136,7 @@ export const AuthProvider = ({ children }) => {
         }
         setToken(null);
         setUser(null);
+        localStorage.removeItem('refreshToken'); // Clear Refresh Token
         localStorage.removeItem('lastActivity');
     };
 
