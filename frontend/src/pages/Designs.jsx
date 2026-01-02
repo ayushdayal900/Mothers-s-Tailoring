@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { getProducts, getCategories, toggleWishlist } from '../services/api';
+import { getProducts, getCategories } from '../services/api';
 import { Filter, ShoppingBag, X, Heart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
+import { WishlistContext } from '../context/WishlistContext';
 
 const Designs = () => {
     const { t } = useTranslation();
     const { addToCart } = useContext(CartContext);
     const { user } = useContext(AuthContext);
+    const { toggleWishlist, wishlistItems } = useContext(WishlistContext);
     const navigate = useNavigate();
 
     // State
@@ -27,8 +29,7 @@ const Designs = () => {
     const [priceRange, setPriceRange] = useState([0, 25000]);
     const [sortBy, setSortBy] = useState('newest');
 
-    // Wishlist State
-    const [wishlistIds, setWishlistIds] = useState([]);
+
 
     // Lightbox State
     const [selectedImage, setSelectedImage] = useState(null);
@@ -56,28 +57,7 @@ const Designs = () => {
         fetchData();
     }, []);
 
-    // Fetch Wishlist separately when user changes
-    useEffect(() => {
-        const fetchUserWishlist = async () => {
-            if (user) {
-                try {
-                    const token = localStorage.getItem('token');
-                    if (token) {
-                        const wData = await import('../services/api').then(module => module.getWishlist(token));
-                        // Expecting wData.products to be array of objects or IDs. 
-                        // Based on controller it returns populated products.
-                        const ids = wData.products.map(p => typeof p === 'object' ? p._id : p);
-                        setWishlistIds(ids);
-                    }
-                } catch (e) {
-                    console.error("Failed to fetch wishlist", e);
-                }
-            } else {
-                setWishlistIds([]);
-            }
-        };
-        fetchUserWishlist();
-    }, [user]);
+
 
     // Handlers
     const handleCategoryClick = (catName) => {
@@ -265,22 +245,12 @@ const Designs = () => {
                                                     e.stopPropagation();
                                                     if (!user) return alert('Please login first');
 
-                                                    // Optimistic UI Update
-                                                    const isLiked = wishlistIds.includes(product._id);
-                                                    setWishlistIds(prev => isLiked ? prev.filter(id => id !== product._id) : [...prev, product._id]);
-
-                                                    try {
-                                                        await toggleWishlist(product._id);
-                                                        // alert('Wishlist updated!'); // Removing alert for smoother UX
-                                                    } catch (err) {
-                                                        console.error(err);
-                                                        // Revert on error
-                                                        setWishlistIds(prev => isLiked ? [...prev, product._id] : prev.filter(id => id !== product._id));
-                                                    }
+                                                    // Use Context toggle
+                                                    await toggleWishlist(product);
                                                 }}
                                                 className="absolute top-4 right-4 bg-white/90 p-2 rounded-full text-brand-maroon hover:bg-red-50 transition shadow-sm transform -translate-y-12 group-hover:translate-y-0 z-10"
                                             >
-                                                <Heart size={20} className={wishlistIds.includes(product._id) ? "fill-current text-red-500" : ""} />
+                                                <Heart size={20} className={wishlistItems.some(item => item._id === product._id) ? "fill-current text-red-500" : ""} />
                                             </button>
                                         </div>
 
