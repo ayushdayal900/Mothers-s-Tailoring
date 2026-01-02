@@ -19,7 +19,7 @@ const saveMeasurement = async (req, res) => {
     try {
         const {
             profileName, shoulder, bust, chest, waist, armHole,
-            sleeveLength, bicep, hips, inseam, length, thigh, unit
+            sleeveLength, bicep, hips, inseam, length, thigh, unit, standardSize
         } = req.body;
 
         // Check if a profile with this name already exists for the user
@@ -42,7 +42,9 @@ const saveMeasurement = async (req, res) => {
             measurement.inseam = inseam;
             measurement.length = length;
             measurement.thigh = thigh;
+            measurement.thigh = thigh;
             measurement.unit = unit || 'inch';
+            measurement.standardSize = standardSize || 'Custom';
 
             const updatedMeasurement = await measurement.save();
             return res.status(200).json(updatedMeasurement);
@@ -51,7 +53,8 @@ const saveMeasurement = async (req, res) => {
             const newMeasurement = await Measurement.create({
                 user: req.user._id,
                 profileName: profileName || 'My Measurements',
-                shoulder, bust, chest, waist, armHole, sleeveLength, bicep, hips, inseam, length, thigh, unit
+                shoulder, bust, chest, waist, armHole, sleeveLength, bicep, hips, inseam, length, thigh, unit,
+                standardSize: standardSize || 'Custom'
             });
             return res.status(201).json(newMeasurement);
         }

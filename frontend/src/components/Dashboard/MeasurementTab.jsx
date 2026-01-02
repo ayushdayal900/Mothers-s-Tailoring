@@ -12,6 +12,7 @@ const MeasurementTab = () => {
 
     const emptyState = {
         profileName: 'My Measurements',
+        standardSize: 'Custom',
         shoulder: '', bust: '', chest: '', waist: '', armHole: '',
         sleeveLength: '', bicep: '', hips: '', inseam: '', length: '', thigh: '',
         unit: 'inch'
@@ -71,6 +72,26 @@ const MeasurementTab = () => {
 
     if (loading) return <div className="p-8 text-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-maroon mx-auto"></div></div>;
 
+    const sizeChart = {
+        'XS': { shoulder: 13.5, bust: 32, waist: 28, hips: 34, armHole: 14, sleeveLength: 16, length: 40, inseam: 28, thigh: 20 },
+        'S': { shoulder: 14, bust: 34, waist: 30, hips: 36, armHole: 15, sleeveLength: 16.5, length: 41, inseam: 28, thigh: 21 },
+        'M': { shoulder: 14.5, bust: 36, waist: 32, hips: 38, armHole: 16, sleeveLength: 17, length: 42, inseam: 29, thigh: 22 },
+        'L': { shoulder: 15, bust: 38, waist: 34, hips: 40, armHole: 17, sleeveLength: 17.5, length: 43, inseam: 29, thigh: 23 },
+        'XL': { shoulder: 15.5, bust: 40, waist: 36, hips: 42, armHole: 18, sleeveLength: 18, length: 44, inseam: 30, thigh: 24 },
+        'XXL': { shoulder: 16, bust: 42, waist: 38, hips: 44, armHole: 19, sleeveLength: 18.5, length: 45, inseam: 30, thigh: 25 },
+        'XXXL': { shoulder: 16.5, bust: 44, waist: 40, hips: 46, armHole: 20, sleeveLength: 19, length: 46, inseam: 31, thigh: 26 },
+        'Custom': {} // No auto-fill
+    };
+
+    const handleSizeSelect = (size) => {
+        const defaults = sizeChart[size] || {};
+        setFormData(prev => ({
+            ...prev,
+            ...defaults,
+            standardSize: size
+        }));
+    };
+
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -102,6 +123,26 @@ const MeasurementTab = () => {
 
                 {isEditing ? (
                     <form onSubmit={handleSubmit}>
+                        <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                            <label className="block text-sm font-bold text-gray-700 mb-3">Select a Standard Size (Auto-fill)</label>
+                            <div className="flex flex-wrap gap-2">
+                                {Object.keys(sizeChart).map((size) => (
+                                    <button
+                                        type="button"
+                                        key={size}
+                                        onClick={() => handleSizeSelect(size)}
+                                        className={`px-4 py-2 rounded-md border text-sm font-semibold transition ${formData.standardSize === size
+                                            ? 'bg-brand-maroon text-white border-brand-maroon shadow-md transform scale-105'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">Selecting a size will auto-fill the measurements below with standard values.</p>
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                             {/* Upper Body */}
                             <div className="col-span-full">
@@ -146,6 +187,14 @@ const MeasurementTab = () => {
                     </form>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-12">
+                        <div className="col-span-full mb-2 pb-4 border-b border-gray-100 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <span className="text-gray-500 font-medium">Standard Size:</span>
+                                <span className="bg-brand-maroon text-white px-4 py-1 rounded-full font-bold text-sm shadow-sm">
+                                    {measurements.standardSize || 'Custom'}
+                                </span>
+                            </div>
+                        </div>
                         <DisplayField label="Shoulder" value={measurements.shoulder} />
                         <DisplayField label="Bust/Chest" value={measurements.bust || measurements.chest} />
                         <DisplayField label="Waist" value={measurements.waist} />

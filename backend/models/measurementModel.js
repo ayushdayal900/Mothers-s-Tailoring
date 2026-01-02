@@ -11,6 +11,11 @@ const measurementSchema = new mongoose.Schema({
         required: true,
         default: 'My Measurements'
     },
+    standardSize: {
+        type: String,
+        enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Custom'],
+        default: 'Custom'
+    },
     // Upper Body
     shoulder: { type: Number, required: true },
     bust: { type: Number },
