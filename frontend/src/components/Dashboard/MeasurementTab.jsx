@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Ruler, Save, Edit2, CheckCircle } from 'lucide-react';
+import AppointmentBooking from './AppointmentBooking';
 
 const MeasurementTab = () => {
     const [loading, setLoading] = useState(true);
@@ -156,6 +157,8 @@ const MeasurementTab = () => {
                     </div>
                 )}
             </div>
+
+            <AppointmentBooking />
         </div>
     );
 };

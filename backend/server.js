@@ -41,6 +41,8 @@ app.use(cors({
 app.use(compression()); // Compress all responses
 app.use(cookieParser()); // Parse cookies
 app.use(morgan('dev')); // Log requests
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -69,6 +71,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/customers', require('./routes/customerRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+const appointmentRoutes = require('./routes/appointmentRoutes');
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/cms', cmsRoutes);
@@ -78,6 +81,7 @@ app.use('/api/admin/cloudinary', require('./routes/cloudinaryRoutes'));
 app.use('/api/measurements', require('./routes/measurementRoutes'));
 app.use('/api/wishlist', require('./routes/wishlistRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/appointments', appointmentRoutes);
 
 app.get('/', (req, res) => {
     res.send('Mahalaxmi Tailoring API is running...');

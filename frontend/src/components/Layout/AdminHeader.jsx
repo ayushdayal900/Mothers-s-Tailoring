@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Menu, X, LayoutDashboard, Package, Scissors, Users, FileText, CreditCard, LogOut } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Package, Scissors, Users, FileText, CreditCard, LogOut, Video } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -24,6 +24,7 @@ const AdminHeader = () => {
         { name: 'CMS', path: '/admin/cms', icon: FileText },
         { name: 'Payments', path: '/admin/payments', icon: CreditCard },
         { name: 'Messages', path: '/admin/messages', icon: FileText },
+        { name: 'Meetings', path: '/admin/meetings', icon: Video },
     ];
 
     return (

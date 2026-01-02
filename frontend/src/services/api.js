@@ -70,6 +70,12 @@ export const getCategories = async () => {
 };
 
 // Measurements API
+export const getAppointments = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await api.get('/appointments', config);
+    return response.data;
+};
+
 export const getMeasurements = async (token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
     const response = await api.get('/measurements', config);
@@ -104,6 +110,27 @@ export const addReview = async (data, token) => {
 
 export const getProductReviews = async (productId) => {
     const response = await api.get(`/reviews/${productId}`);
+    return response.data;
+};
+
+// Appointment API
+export const bookAppointment = async (data, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await api.post('/appointments', data, config);
+    return response.data;
+};
+
+
+
+export const getAllAppointments = async (token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await api.get('/appointments/admin/all', config);
+    return response.data;
+};
+
+export const updateAppointmentStatus = async (id, status, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const response = await api.put(`/appointments/${id}/status`, { status }, config);
     return response.data;
 };
 

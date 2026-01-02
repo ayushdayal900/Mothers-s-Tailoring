@@ -6,37 +6,40 @@ import { AuthContext } from '../context/AuthContext';
 
 const Wishlist = () => {
     const [wishlist, setWishlist] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const { user } = useContext(AuthContext); // Can use user check
-    const token = localStorage.getItem('token');
+    const { user, token, loading: authLoading } = useContext(AuthContext);
+    const [pageLoading, setPageLoading] = useState(true);
 
     useEffect(() => {
-        fetchWishlist();
-    }, []);
+        if (!authLoading) {
+            if (token) {
+                fetchWishlist();
+            } else {
+                setPageLoading(false);
+            }
+        }
+    }, [authLoading, token]);
 
     const fetchWishlist = async () => {
         try {
-            if (!token) return;
             const data = await getWishlist(token);
             setWishlist(data);
         } catch (error) {
             console.error("Error loading wishlist", error);
         } finally {
-            setLoading(false);
+            setPageLoading(false);
         }
     };
 
     const handleRemove = async (productId) => {
         try {
             await toggleWishlist(productId, token);
-            // Optimistic update or refetch
             fetchWishlist();
         } catch (error) {
             console.error("Error removing item", error);
         }
     };
 
-    if (loading) return <div className="min-h-screen pt-32 text-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-maroon mx-auto"></div></div>;
+    if (authLoading || pageLoading) return <div className="min-h-screen pt-32 text-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-maroon mx-auto"></div></div>;
 
     if (!token) {
         return (

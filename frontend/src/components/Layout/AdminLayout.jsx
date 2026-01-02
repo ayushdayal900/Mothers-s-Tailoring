@@ -20,9 +20,13 @@ const AdminLayout = () => {
                         <ShoppingBag size={20} />
                         <span>Orders</span>
                     </Link>
-                    <Link to="/admin/products" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition">
+                    <Link to="/admin/customers" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition">
                         <Users size={20} />
                         <span>Customers</span>
+                    </Link>
+                    <Link to="/admin/meetings" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition">
+                        <Calendar size={20} />
+                        <span>Meetings</span>
                     </Link>
                     <Link to="/admin/settings" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition">
                         <Settings size={20} />
