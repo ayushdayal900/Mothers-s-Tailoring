@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductById } from '../services/api'; // Need to ensure this exists or use getProducts().find
+import { getProductById, toggleWishlist } from '../services/api'; // Need to ensure this exists or use getProducts().find
 import { CartContext } from '../context/CartContext';
-import { Minus, Plus, ShoppingBag, ArrowLeft, Upload } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
+import { Minus, Plus, ShoppingBag, ArrowLeft, Upload, Heart } from 'lucide-react';
+import ReviewSection from '../components/Products/ReviewSection';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useContext(CartContext);
+    const { user } = useContext(AuthContext);
 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -23,26 +26,37 @@ const ProductDetails = () => {
         specialRequests: ''
     });
 
+    const [isWishlisted, setIsWishlisted] = useState(false);
+
     useEffect(() => {
-        const fetchProduct = async () => {
+        const fetchProductAndWishlist = async () => {
             try {
-                // If getProductById is not available, we might fetch all and filter, 
-                // but ideally we should have a specific endpoint. 
-                // Assuming getProductById is implemented or we use a temporary fetch.
                 const data = await getProductById(id);
                 setProduct(data);
                 setMainImage(data.images[0]?.url || '');
                 if (data.fabricOptions?.length > 0) {
                     setCustomization(prev => ({ ...prev, fabric: data.fabricOptions[0] }));
                 }
+
+                // Check Wishlist Status
+                if (user) {
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        const { getWishlist } = await import('../services/api');
+                        const wData = await getWishlist(token);
+                        const ids = wData.products.map(p => typeof p === 'object' ? p._id : p);
+                        setIsWishlisted(ids.includes(id));
+                    }
+                }
+
                 setLoading(false);
             } catch (error) {
                 console.error("Failed to load product", error);
                 setLoading(false);
             }
         };
-        fetchProduct();
-    }, [id]);
+        fetchProductAndWishlist();
+    }, [id, user]);
 
     const handleAddToCart = () => {
         const itemToAdd = {
@@ -181,8 +195,35 @@ const ProductDetails = () => {
                                 <ShoppingBag size={20} />
                                 Add to Cart - ₹{totalPrice}
                             </button>
+
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        const token = localStorage.getItem('token');
+                                        if (!token) return alert('Please login first');
+
+                                        // Optimistic Update
+                                        setIsWishlisted(!isWishlisted);
+
+                                        await toggleWishlist(product._id, token);
+                                        // alert('Wishlist updated!'); // Removed for smoother UX
+                                    } catch (err) {
+                                        console.error(err);
+                                        setIsWishlisted(!isWishlisted); // Revert
+                                    }
+                                }}
+                                className={`w-12 h-12 border-2 rounded-lg flex items-center justify-center transition ${isWishlisted ? 'border-brand-maroon bg-brand-maroon/10 text-red-500' : 'border-brand-maroon text-brand-maroon hover:bg-red-50'}`}
+                                title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                            >
+                                <Heart size={24} className={isWishlisted ? "fill-current" : ""} />
+                            </button>
                         </div>
                     </div>
+                </div>
+
+                {/* Reviews Section */}
+                <div className="mt-16">
+                    <ReviewSection productId={id} user={user} />
                 </div>
             </div>
         </div>

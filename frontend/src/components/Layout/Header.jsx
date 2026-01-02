@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Menu, X, ShoppingBag, User, LogOut } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, LogOut, Heart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../LanguageToggle';
@@ -30,9 +30,14 @@ const Header = () => {
                     <Link to="/faq" className={`hover:text-brand-maroon transition duration-300 ${isActive('/faq')}`}>{t('nav.faq')}</Link>
                     <Link to="/contact" className={`hover:text-brand-maroon transition duration-300 ${isActive('/contact')}`}>{t('nav.contact')}</Link>
                     {user && (
-                        <Link to="/cart" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/cart')}`}>
-                            <ShoppingBag size={20} />
-                        </Link>
+                        <>
+                            <Link to="/wishlist" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/wishlist')}`} title="My Wishlist">
+                                <Heart size={20} />
+                            </Link>
+                            <Link to="/cart" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/cart')}`} title="Cart">
+                                <ShoppingBag size={20} />
+                            </Link>
+                        </>
                     )}
                 </nav>
 
@@ -72,9 +77,14 @@ const Header = () => {
                         <Link to="/about" className="text-brand-charcoal hover:text-brand-maroon" onClick={() => setIsOpen(false)}>{t('nav.about')}</Link>
                         <Link to="/contact" className="text-brand-charcoal hover:text-brand-maroon" onClick={() => setIsOpen(false)}>{t('nav.contact')}</Link>
                         {user && (
-                            <Link to="/cart" className="text-brand-charcoal hover:text-brand-maroon flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
-                                <ShoppingBag size={18} /> Cart
-                            </Link>
+                            <>
+                                <Link to="/wishlist" className="text-brand-charcoal hover:text-brand-maroon flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
+                                    <Heart size={18} /> Wishlist
+                                </Link>
+                                <Link to="/cart" className="text-brand-charcoal hover:text-brand-maroon flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
+                                    <ShoppingBag size={18} /> Cart
+                                </Link>
+                            </>
                         )}
                         {user ? (
                             <>

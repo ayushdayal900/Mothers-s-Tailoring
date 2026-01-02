@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import { CheckCircle, Clock, Truck, Package, ArrowLeft, MapPin } from 'lucide-react';
+import OrderTimeline from '../components/Orders/OrderTimeline';
 
 const OrderDetails = () => {
     const { id } = useParams();
@@ -32,27 +33,6 @@ const OrderDetails = () => {
     if (loading) return <div className="min-h-screen py-32 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-maroon"></div></div>;
     if (!order) return <div className="min-h-screen py-32 text-center text-gray-500">Order not found.</div>;
 
-    // Timeline Logic
-    const steps = [
-        { status: 'pending', label: 'Order Placed', icon: Clock },
-        { status: 'measurements_confirmed', label: 'Measurements Confirmed', icon: CheckCircle }, // Assuming this status exists or mapped
-        { status: 'in_stitching', label: 'In Stitching', icon: Package },
-        { status: 'ready', label: 'Ready', icon: CheckCircle },
-        { status: 'dispatched', label: 'Dispatched', icon: Truck },
-        { status: 'completed', label: 'Delivered', icon: CheckCircle }
-    ];
-
-    // Helper to determine step state: 'completed', 'current', 'upcoming'
-    const getStepState = (stepStatus, currentStatus) => {
-        const statusOrder = ['pending', 'measurements_confirmed', 'in_stitching', 'ready', 'dispatched', 'completed'];
-        const currentIndex = statusOrder.indexOf(currentStatus);
-        const stepIndex = statusOrder.indexOf(stepStatus);
-
-        if (stepIndex < currentIndex) return 'completed';
-        if (stepIndex === currentIndex) return 'current';
-        return 'upcoming';
-    };
-
     return (
         <div className="bg-gray-50 min-h-screen pt-24 pb-12">
             <div className="container mx-auto px-4 max-w-5xl">
@@ -75,30 +55,7 @@ const OrderDetails = () => {
 
                     {/* Timeline */}
                     <div className="p-8 border-b border-gray-100 overflow-x-auto">
-                        <div className="flex items-center justify-between min-w-[700px] relative">
-                            {/* Connecting Line */}
-                            <div className="absolute left-0 top-1/2 w-full h-1 bg-gray-100 -z-10 transform -translate-y-1/2"></div>
-
-                            {steps.map((step, idx) => {
-                                const state = getStepState(step.status, order.status);
-                                const isCompleted = state === 'completed';
-                                const isCurrent = state === 'current';
-
-                                return (
-                                    <div key={idx} className="flex flex-col items-center gap-3 relative bg-white px-2">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition z-10 
-                                            ${isCompleted ? 'bg-green-100 border-green-500 text-green-600' :
-                                                isCurrent ? 'bg-brand-maroon border-brand-maroon text-white animate-pulse' :
-                                                    'bg-white border-gray-300 text-gray-300'}`}>
-                                            <step.icon size={18} />
-                                        </div>
-                                        <p className={`text-sm font-medium ${isCurrent ? 'text-brand-maroon' : 'text-gray-500'}`}>
-                                            {step.label}
-                                        </p>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        <OrderTimeline status={order.status} />
                     </div>
 
                     {/* Details Grid */}

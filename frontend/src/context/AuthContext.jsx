@@ -6,30 +6,46 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [token, setToken] = useState(null); // No localStorage access
 
     // Configure api defaults
-    if (token) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
+    useEffect(() => {
+        if (token) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+            delete api.defaults.headers.common['Authorization'];
+        }
+    }, [token]);
 
     // Load user on mount
     useEffect(() => {
-        const loadUser = async () => {
-            if (token) {
-                try {
-                    const res = await api.get('/auth/me');
-                    setUser(res.data);
-                } catch (error) {
-                    console.error("Failed to load user", error);
-                    logout();
-                }
+        const initAuth = async () => {
+            try {
+                // 1. Try to get new access token via refresh cookie
+                const res = await api.get('/auth/refresh');
+                setToken(res.data.token);
+
+                // 2. Load user data
+                // The token won't be in api.defaults yet for this specific call unless we set it manually or rely on interceptor?
+                // Actually, setting state is async. 
+                // We can pass the token purely for this call or just wait for effect?
+                // Safer: manually set header for this call
+                api.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+                const userRes = await api.get('/auth/me');
+                setUser(userRes.data);
+            } catch (error) {
+                // Not logged in or refresh failed
+                setToken(null);
+                setUser(null);
+                // Clear any leftover junk
+                localStorage.removeItem('token');
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
-        loadUser();
-    }, [token]);
+        initAuth();
+    }, []);
 
     // Inactivity Tracker
     useEffect(() => {
@@ -85,10 +101,9 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const res = await api.post('/auth/login', { email, password });
-            localStorage.setItem('token', res.data.token);
             setToken(res.data.token);
             setUser(res.data);
-            api.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+            localStorage.setItem('lastActivity', Date.now().toString());
             return { success: true, role: res.data.role };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Login failed' };
@@ -99,10 +114,9 @@ export const AuthProvider = ({ children }) => {
     const register = async (userData) => {
         try {
             const res = await api.post('/auth/register', userData);
-            localStorage.setItem('token', res.data.token);
             setToken(res.data.token);
             setUser(res.data);
-            api.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+            localStorage.setItem('lastActivity', Date.now().toString());
             return { success: true };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Registration failed' };
@@ -110,12 +124,25 @@ export const AuthProvider = ({ children }) => {
     };
 
     // Logout
-    const logout = () => {
-        localStorage.removeItem('token');
+    const logout = async (skipApi = false) => {
+        if (!skipApi) {
+            try {
+                await api.post('/auth/logout');
+            } catch (error) {
+                console.error("Logout failed", error);
+            }
+        }
         setToken(null);
         setUser(null);
-        delete api.defaults.headers.common['Authorization'];
+        localStorage.removeItem('lastActivity');
     };
+
+    // Listen for axios interceptor logout event
+    useEffect(() => {
+        const handleLogoutEvent = () => logout(true); // Skip API call on forced logout
+        document.addEventListener('auth:logout', handleLogoutEvent);
+        return () => document.removeEventListener('auth:logout', handleLogoutEvent);
+    }, []);
 
     return (
         <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>

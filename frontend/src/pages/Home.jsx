@@ -87,6 +87,7 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 const Home = () => {
     const { t } = useTranslation();
     const [testimonials, setTestimonials] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchTestimonials = async () => {
@@ -95,6 +96,8 @@ const Home = () => {
                 setTestimonials(res.data);
             } catch (error) {
                 console.error("Error fetching testimonials", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchTestimonials();
@@ -172,7 +175,9 @@ const Home = () => {
                 <div className="container mx-auto px-4 relative z-10 overflow-hidden">
                     <h2 className="text-3xl md:text-5xl font-serif font-bold text-center mb-16 text-brand-gold">Customer Reviews</h2>
 
-                    {testimonials.length > 0 ? (
+                    {loading ? (
+                        <p className="text-center text-brand-beige/50">Loading reviews...</p>
+                    ) : testimonials.length > 0 ? (
                         <div className="flex w-[200%] animate-scroll hover:pause">
                             {[...testimonials, ...testimonials].map((testi, idx) => (
                                 <div key={idx} className="w-[300px] md:w-[400px] flex-shrink-0 mx-4 bg-white/10 backdrop-blur p-8 rounded-xl border border-white/20 hover:bg-white/20 transition cursor-default">
@@ -188,7 +193,10 @@ const Home = () => {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-center text-brand-beige/50">Loading reviews...</p>
+                        <div className="text-center">
+                            <p className="text-brand-beige/70 text-lg italic mb-4">No reviews yet.</p>
+                            <p className="text-white/60">Be the first to share your experience!</p>
+                        </div>
                     )}
                 </div>
             </section>

@@ -20,6 +20,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard'));
@@ -107,6 +108,15 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <PublicLayout><Checkout /></PublicLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/wishlist"
+                element={
+                  <ProtectedRoute>
+                    <PublicLayout><Wishlist /></PublicLayout>
                   </ProtectedRoute>
                 }
               />

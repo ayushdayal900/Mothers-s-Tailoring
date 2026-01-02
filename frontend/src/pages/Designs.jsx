@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { getProducts, getCategories } from '../services/api';
-import { Filter, ShoppingBag, X } from 'lucide-react';
+import { getProducts, getCategories, toggleWishlist } from '../services/api';
+import { Filter, ShoppingBag, X, Heart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -27,6 +27,9 @@ const Designs = () => {
     const [priceRange, setPriceRange] = useState([0, 25000]);
     const [sortBy, setSortBy] = useState('newest');
 
+    // Wishlist State
+    const [wishlistIds, setWishlistIds] = useState([]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -49,6 +52,29 @@ const Designs = () => {
         };
         fetchData();
     }, []);
+
+    // Fetch Wishlist separately when user changes
+    useEffect(() => {
+        const fetchUserWishlist = async () => {
+            if (user) {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        const wData = await import('../services/api').then(module => module.getWishlist(token));
+                        // Expecting wData.products to be array of objects or IDs. 
+                        // Based on controller it returns populated products.
+                        const ids = wData.products.map(p => typeof p === 'object' ? p._id : p);
+                        setWishlistIds(ids);
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch wishlist", e);
+                }
+            } else {
+                setWishlistIds([]);
+            }
+        };
+        fetchUserWishlist();
+    }, [user]);
 
     // Handlers
     const handleCategoryClick = (catName) => {
@@ -86,7 +112,7 @@ const Designs = () => {
         return true;
     }).sort(handleSort);
 
-    // console.log("Total Products:", products.length, "Filtered Count:", filteredProducts.length);
+    console.log("Total Products:", products.length, "Filtered Count:", filteredProducts.length, "Categories:", categories.length);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory"><div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand-maroon"></div></div>;
     if (error) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory text-red-600"><p>{error}</p></div>;
@@ -104,28 +130,39 @@ const Designs = () => {
                 </div>
 
                 {viewMode === 'categories' ? (
-                    /* Category Selection View */
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {categories.map(cat => (
-                            <div
-                                key={cat._id}
-                                onClick={() => handleCategoryClick(cat.name)}
-                                className="group cursor-pointer bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 h-64 relative"
-                            >
-                                {/* We don't have category images yet, so we'll use a placeholder or try to find a product image from this category */}
-                                <div className="absolute inset-0 bg-brand-maroon/5 group-hover:bg-brand-maroon/10 transition"></div>
-                                <div className="h-full flex flex-col items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-                                    <h3 className="text-2xl font-serif font-bold text-brand-maroon group-hover:scale-110 transition duration-300">{cat.name}</h3>
-                                    <span className="mt-2 text-sm text-gray-500 uppercase tracking-widest group-hover:text-brand-gold transition">View Collection</span>
+                    categories.length === 0 ? (
+                        <div className="text-center py-20">
+                            <h3 className="text-xl font-serif text-gray-500">No categories found</h3>
+                            <p className="text-gray-400">Please add categories in the Admin Dashboard.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {categories.map(cat => (
+                                <div
+                                    key={cat._id}
+                                    onClick={() => handleCategoryClick(cat.name)}
+                                    className="group cursor-pointer bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 h-64 relative"
+                                >
+                                    {/* We don't have category images yet, so we'll use a placeholder or try to find a product image from this category */}
+                                    <div className="absolute inset-0 bg-brand-maroon/5 group-hover:bg-brand-maroon/10 transition"></div>
+                                    <div className="h-full flex flex-col items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+                                        <h3 className="text-2xl font-serif font-bold text-brand-maroon group-hover:scale-110 transition duration-300">{cat.name}</h3>
+                                        <span className="mt-2 text-sm text-gray-500 uppercase tracking-widest group-hover:text-brand-gold transition">View Collection</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )
                 ) : (
                     /* Product Listing View */
                     <div className="flex flex-col md:flex-row gap-8">
                         {/* Sidebar Filters */}
-                        <aside className={`md:w-64 bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit sticky top-24 ${showFilters ? 'block' : 'hidden md:block'}`}>
+                        <aside className={`
+                            md:w-64 bg-white p-6 rounded-xl shadow-sm border border-gray-100 
+                            h-fit md:sticky md:top-24
+                            fixed inset-0 z-50 overflow-y-auto w-full md:relative md:z-auto
+                            ${showFilters ? 'block' : 'hidden md:block'}
+                        `}>
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="font-bold text-lg text-brand-maroon">Filters</h3>
                                 <button onClick={() => setViewMode('categories')} className="text-sm underline text-gray-500 hover:text-brand-maroon">Back to Categories</button>
@@ -197,13 +234,14 @@ const Designs = () => {
                                     <div key={product._id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 group border border-gray-100 flex flex-col h-full">
                                         <div className="h-64 overflow-hidden relative">
                                             <img
-                                                src={product.images[0]?.url || product.image}
+                                                src={product.images?.[0]?.url || product.image}
                                                 alt={product.name}
                                                 className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
                                             />
                                             {/* Overlay Cart Button */}
                                             <button
-                                                onClick={() => {
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // Prevent card click
                                                     if (user) {
                                                         addToCart(product);
                                                         alert('Added to cart!');
@@ -212,9 +250,32 @@ const Designs = () => {
                                                         navigate('/designs');
                                                     }
                                                 }}
-                                                className="absolute bottom-4 right-4 bg-white text-brand-maroon p-3 rounded-full shadow-lg hover:bg-brand-maroon hover:text-white transition transform translate-y-12 group-hover:translate-y-0"
+                                                className="absolute bottom-4 right-4 bg-white text-brand-maroon p-3 rounded-full shadow-lg hover:bg-brand-maroon hover:text-white transition transform translate-y-12 group-hover:translate-y-0 z-10"
                                             >
                                                 <ShoppingBag size={20} />
+                                            </button>
+                                            {/* Wishlist Button */}
+                                            <button
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    if (!user) return alert('Please login first');
+
+                                                    // Optimistic UI Update
+                                                    const isLiked = wishlistIds.includes(product._id);
+                                                    setWishlistIds(prev => isLiked ? prev.filter(id => id !== product._id) : [...prev, product._id]);
+
+                                                    try {
+                                                        await toggleWishlist(product._id, localStorage.getItem('token'));
+                                                        // alert('Wishlist updated!'); // Removing alert for smoother UX
+                                                    } catch (err) {
+                                                        console.error(err);
+                                                        // Revert on error
+                                                        setWishlistIds(prev => isLiked ? [...prev, product._id] : prev.filter(id => id !== product._id));
+                                                    }
+                                                }}
+                                                className="absolute top-4 right-4 bg-white/90 p-2 rounded-full text-brand-maroon hover:bg-red-50 transition shadow-sm transform -translate-y-12 group-hover:translate-y-0 z-10"
+                                            >
+                                                <Heart size={20} className={wishlistIds.includes(product._id) ? "fill-current text-red-500" : ""} />
                                             </button>
                                         </div>
 

@@ -1,7 +1,8 @@
+```javascript
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
-import { Ruler, User, Package, LogOut, MapPin, Plus, Trash2, Settings } from 'lucide-react';
+import { Ruler, User, Package, LogOut, MapPin, Plus, Trash2, Settings, Heart, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // Sub-components (Will extract later if complex)
@@ -49,7 +50,7 @@ const CustomerDashboard = () => {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const config = { headers: { Authorization: `Bearer ${ token } ` } };
             const res = await api.get('/auth/me', config);
             if (res.data.addresses) {
                 setAddresses(res.data.addresses);
@@ -62,7 +63,7 @@ const CustomerDashboard = () => {
     const fetchMeasurements = async () => {
         try {
             const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const config = { headers: { Authorization: `Bearer ${ token } ` } };
             const res = await api.get('/customers/measurements', config);
             setMeasurements(res.data);
         } catch (error) {
@@ -90,7 +91,7 @@ const CustomerDashboard = () => {
     const fetchAllOrders = async () => {
         try {
             const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const config = { headers: { Authorization: `Bearer ${ token } ` } };
             const res = await api.get('/orders/myorders', config);
             setAllOrders(res.data);
         } catch (error) {
@@ -101,7 +102,7 @@ const CustomerDashboard = () => {
     const fetchDashboardData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const config = { headers: { Authorization: `Bearer ${ token } ` } };
             const ordersRes = await api.get('/orders/myorders', config);
 
             const orders = ordersRes.data;
@@ -119,8 +120,8 @@ const CustomerDashboard = () => {
         if (!window.confirm('Are you sure using want to delete this address?')) return;
         try {
             const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-            const res = await api.delete(`/customers/address/${id}`, config);
+            const config = { headers: { Authorization: `Bearer ${ token } ` } };
+            const res = await api.delete(`/ customers / address / ${ id } `, config);
             setAddresses(res.data); // Returns updated list
         } catch (error) {
             console.error("Error deleting address", error);
@@ -132,44 +133,74 @@ const CustomerDashboard = () => {
         fetchUserData(); // Refresh list
     };
 
+    // Close mobile menu when tab changes
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        setIsMobileMenuOpen(false);
+    };
+
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row relative">
+            {/* Mobile Header for Dashboard */}
+            <div className="md:hidden bg-white p-4 border-b border-gray-200 flex justify-between items-center sticky top-16 z-20">
+                <span className="font-serif font-bold text-brand-maroon text-lg">My Dashboard</span>
+                <button 
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+                >
+                    {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+            </div>
+
             {/* Sidebar */}
-            <aside className="bg-white border-r border-gray-200 hidden md:block w-64 sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto">
-                <div className="p-6">
+            <aside className={`
+bg - white border - r border - gray - 200
+md:block md: w - 64 md:sticky md: top - 24 md: h - [calc(100vh - 6rem)] md: overflow - y - auto
+                fixed inset - 0 z - 30 pt - 20 md: pt - 0 overflow - y - auto
+transition - transform duration - 300 ease -in -out
+                ${ isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0' }
+`}>
+                <div className="p-6 hidden md:block">
                     <h2 className="text-xl font-serif text-brand-maroon font-bold">My Account</h2>
                     <p className="text-sm text-gray-500 mt-1">
                         Welcome, {user?.firstName}
                     </p>
                 </div>
-                <nav className="mt-6 px-4 space-y-2">
+                <nav className="mt-2 md:mt-6 px-4 space-y-2 pb-8 md:pb-0">
                     <button
-                        onClick={() => setActiveTab('overview')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${activeTab === 'overview' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                        onClick={() => handleTabChange('overview')}
+                        className={`w - full flex items - center gap - 3 px - 4 py - 3 rounded - lg transition ${ activeTab === 'overview' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100' } `}
                     >
                         <User size={18} /> Overview
                     </button>
                     <button
-                        onClick={() => setActiveTab('orders')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${activeTab === 'orders' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                        onClick={() => handleTabChange('orders')}
+                        className={`w - full flex items - center gap - 3 px - 4 py - 3 rounded - lg transition ${ activeTab === 'orders' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100' } `}
                     >
                         <Package size={18} /> My Orders
                     </button>
                     <button
-                        onClick={() => setActiveTab('measurements')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${activeTab === 'measurements' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                        onClick={() => handleTabChange('measurements')}
+                        className={`w - full flex items - center gap - 3 px - 4 py - 3 rounded - lg transition ${ activeTab === 'measurements' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100' } `}
                     >
                         <Ruler size={18} /> Measurements
                     </button>
+                    <Link
+                        to="/wishlist"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`w - full flex items - center gap - 3 px - 4 py - 3 rounded - lg transition text - gray - 600 hover: bg - gray - 100`}
+                    >
+                        <Heart size={18} /> My Wishlist
+                    </Link>
                     <button
-                        onClick={() => setActiveTab('addresses')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${activeTab === 'addresses' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                        onClick={() => handleTabChange('addresses')}
+                        className={`w - full flex items - center gap - 3 px - 4 py - 3 rounded - lg transition ${ activeTab === 'addresses' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100' } `}
                     >
                         <MapPin size={18} /> My Addresses
                     </button>
                     <button
-                        onClick={() => setActiveTab('profile')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${activeTab === 'profile' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                        onClick={() => handleTabChange('profile')}
+                        className={`w - full flex items - center gap - 3 px - 4 py - 3 rounded - lg transition ${ activeTab === 'profile' ? 'bg-brand-maroon text-white' : 'text-gray-600 hover:bg-gray-100' } `}
                     >
                         <Settings size={18} /> Profile Settings
                     </button>
@@ -249,15 +280,16 @@ const CustomerDashboard = () => {
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                                    order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-                                                    }`}>
+                                                <span className={`inline - block px - 3 py - 1 rounded - full text - xs font - bold uppercase ${
+    order.status === 'completed' ? 'bg-green-100 text-green-800' :
+        order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
+} `}>
                                                     {order.status}
                                                 </span>
                                                 <p className="font-bold text-gray-900 mt-1">₹{order.totalAmount}</p>
                                             </div>
                                             <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
-                                                <Link to={`/order/${order._id}`}>View Details</Link>
+                                                <Link to={`/ order / ${ order._id } `}>View Details</Link>
                                             </button>
                                         </div>
                                     ))
@@ -301,17 +333,18 @@ const CustomerDashboard = () => {
                                         </div>
                                         <div className="flex items-center gap-8 md:text-right w-full md:w-auto justify-between md:justify-end">
                                             <div>
-                                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                                    order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                                                        order.status === 'measurements_confirmed' ? 'bg-blue-100 text-blue-800' :
-                                                            'bg-yellow-100 text-yellow-800'
-                                                    }`}>
+                                                <span className={`inline - block px - 3 py - 1 rounded - full text - xs font - bold uppercase ${
+    order.status === 'completed' ? 'bg-green-100 text-green-800' :
+        order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+            order.status === 'measurements_confirmed' ? 'bg-blue-100 text-blue-800' :
+                'bg-yellow-100 text-yellow-800'
+} `}>
                                                     {order.status.replace('_', ' ')}
                                                 </span>
                                                 <p className="font-bold text-xl text-gray-900 mt-2">₹{order.totalAmount}</p>
                                             </div>
                                             <Link
-                                                to={`/order/${order._id}`}
+                                                to={`/ order / ${ order._id } `}
                                                 className="px-6 py-2 bg-brand-maroon text-white rounded-lg hover:bg-red-900 transition text-sm font-medium"
                                             >
                                                 View Details
@@ -367,7 +400,7 @@ const CustomerDashboard = () => {
                                         <div key={addr._id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex justify-between items-start">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <span className={`px-2 py-1 rounded text-xs uppercase font-bold tracking-wider ${addr.type === 'home' ? 'bg-blue-50 text-blue-700' : addr.type === 'work' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
+                                                    <span className={`px - 2 py - 1 rounded text - xs uppercase font - bold tracking - wider ${ addr.type === 'home' ? 'bg-blue-50 text-blue-700' : addr.type === 'work' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-700' } `}>
                                                         {addr.type}
                                                     </span>
                                                     {addr.isDefault && (
