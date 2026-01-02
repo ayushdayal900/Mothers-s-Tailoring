@@ -117,6 +117,9 @@ const Designs = () => {
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory"><div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand-maroon"></div></div>;
     if (error) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory text-red-600"><p>{error}</p></div>;
 
+    // Lightbox State
+    const [selectedImage, setSelectedImage] = useState(null);
+
     return (
         <div className="bg-brand-ivory min-h-screen pt-20 pb-12">
             <div className="container mx-auto px-4">
@@ -232,7 +235,7 @@ const Designs = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredProducts.map((product) => (
                                     <div key={product._id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 group border border-gray-100 flex flex-col h-full">
-                                        <div className="h-64 overflow-hidden relative">
+                                        <div className="h-64 overflow-hidden relative cursor-zoom-in" onClick={() => setSelectedImage(product.images?.[0]?.url || product.image)}>
                                             <img
                                                 src={product.images?.[0]?.url || product.image}
                                                 alt={product.name}
@@ -265,7 +268,7 @@ const Designs = () => {
                                                     setWishlistIds(prev => isLiked ? prev.filter(id => id !== product._id) : [...prev, product._id]);
 
                                                     try {
-                                                        await toggleWishlist(product._id, localStorage.getItem('token'));
+                                                        await toggleWishlist(product._id);
                                                         // alert('Wishlist updated!'); // Removing alert for smoother UX
                                                     } catch (err) {
                                                         console.error(err);
@@ -309,6 +312,27 @@ const Designs = () => {
                     </div>
                 )}
             </div>
+
+            {/* Lightbox Modal */}
+            {selectedImage && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 cursor-zoom-out"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <button
+                        className="absolute top-6 right-6 text-white/70 hover:text-white p-2"
+                        onClick={() => setSelectedImage(null)}
+                    >
+                        <X size={40} />
+                    </button>
+                    <img
+                        src={selectedImage}
+                        alt="Zoomed Product"
+                        className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-fade-in"
+                        onClick={(e) => e.stopPropagation()} // Prevent close when clicking image
+                    />
+                </div>
+            )}
         </div>
     );
 };
