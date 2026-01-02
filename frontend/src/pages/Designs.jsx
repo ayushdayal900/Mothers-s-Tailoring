@@ -30,6 +30,9 @@ const Designs = () => {
     // Wishlist State
     const [wishlistIds, setWishlistIds] = useState([]);
 
+    // Lightbox State
+    const [selectedImage, setSelectedImage] = useState(null);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -117,8 +120,7 @@ const Designs = () => {
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory"><div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand-maroon"></div></div>;
     if (error) return <div className="min-h-screen flex items-center justify-center bg-brand-ivory text-red-600"><p>{error}</p></div>;
 
-    // Lightbox State
-    const [selectedImage, setSelectedImage] = useState(null);
+
 
     return (
         <div className="bg-brand-ivory min-h-screen pt-20 pb-12">
