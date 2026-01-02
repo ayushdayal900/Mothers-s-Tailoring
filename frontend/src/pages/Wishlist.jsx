@@ -1,45 +1,30 @@
 import React, { useState, useEffect, useContext } from 'react';
-import api, { getWishlist, toggleWishlist } from '../services/api';
+import { toggleWishlist } from '../services/api';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import { WishlistContext } from '../context/WishlistContext';
 
 const Wishlist = () => {
-    const [wishlist, setWishlist] = useState(null);
+    // Rely on context state now
+    const { wishlistItems, fetchWishlist, loading: contextLoading } = useContext(WishlistContext);
     const { user, token, loading: authLoading } = useContext(AuthContext);
-    const [pageLoading, setPageLoading] = useState(true);
 
+    // Trigger fetch on mount if empty? Context handles it usually but we can force refresh
     useEffect(() => {
-        if (!authLoading) {
-            if (token) {
-                fetchWishlist();
-            } else {
-                setPageLoading(false);
-            }
-        }
-    }, [authLoading, token]);
+        if (token) fetchWishlist();
+    }, [token]);
 
-    const fetchWishlist = async () => {
+    const handleRemove = async (productId, type = 'Product') => {
         try {
-            const data = await getWishlist(token);
-            setWishlist(data);
-        } catch (error) {
-            console.error("Error loading wishlist", error);
-        } finally {
-            setPageLoading(false);
-        }
-    };
-
-    const handleRemove = async (productId) => {
-        try {
-            await toggleWishlist(productId, token);
+            await toggleWishlist(productId, token, type);
             fetchWishlist();
         } catch (error) {
             console.error("Error removing item", error);
         }
     };
 
-    if (authLoading || pageLoading) return <div className="min-h-screen pt-32 text-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-maroon mx-auto"></div></div>;
+    if (authLoading) return <div className="min-h-screen pt-32 text-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-maroon mx-auto"></div></div>;
 
     if (!token) {
         return (
@@ -61,7 +46,7 @@ const Wishlist = () => {
                     <Heart className="text-brand-maroon fill-brand-maroon" /> My Wishlist
                 </h1>
 
-                {!wishlist?.products?.length ? (
+                {!wishlistItems?.length ? (
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
                         <Heart size={48} className="mx-auto text-gray-300 mb-4" />
                         <h3 className="text-xl font-medium text-gray-900 mb-2">Your wishlist is empty</h3>
@@ -72,16 +57,16 @@ const Wishlist = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {wishlist.products.map(product => (
+                        {wishlistItems.map(product => (
                             <div key={product._id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
                                 <div className="relative h-64 overflow-hidden">
                                     <img
-                                        src={product.images[0]?.url}
-                                        alt={product.name}
+                                        src={product.images?.[0]?.url || product.imageUrl || product.images?.[0]}
+                                        alt={product.name || product.title}
                                         className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                                     />
                                     <button
-                                        onClick={() => handleRemove(product._id)}
+                                        onClick={() => handleRemove(product._id, product._type)}
                                         className="absolute top-4 right-4 bg-white/90 p-2 rounded-full text-red-500 hover:bg-red-50 transition shadow-sm"
                                         title="Remove from Wishlist"
                                     >

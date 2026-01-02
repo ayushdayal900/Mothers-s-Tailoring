@@ -95,9 +95,9 @@ export const getWishlist = async (token) => {
     return response.data;
 };
 
-export const toggleWishlist = async (productId, token) => {
+export const toggleWishlist = async (productId, token, type = 'Product') => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await api.post('/wishlist/toggle', { productId }, config);
+    const response = await api.post('/wishlist/toggle', { productId, type }, config);
     return response.data;
 };
 

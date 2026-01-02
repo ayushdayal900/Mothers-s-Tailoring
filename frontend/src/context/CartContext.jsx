@@ -3,16 +3,18 @@ import React, { createContext, useState, useEffect } from 'react';
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState([]);
+    const [cartItems, setCartItems] = useState(() => {
+        try {
+            const savedCart = localStorage.getItem('cartItems');
+            return savedCart ? JSON.parse(savedCart) : [];
+        } catch (error) {
+            console.error("Error reading cart from local storage", error);
+            return [];
+        }
+    });
     const [cartTotal, setCartTotal] = useState(0);
 
-    useEffect(() => {
-        // Load cart from local storage if needed, or just keep in memory for now
-        const savedCart = localStorage.getItem('cartItems');
-        if (savedCart) {
-            setCartItems(JSON.parse(savedCart));
-        }
-    }, []);
+    // Removed the initial useEffect that loaded data, as we now do it in useState initialization
 
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));

@@ -10,6 +10,10 @@ const wishlistSchema = new mongoose.Schema({
     products: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
+    }],
+    galleryItems: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'CMS'
     }]
 }, {
     timestamps: true

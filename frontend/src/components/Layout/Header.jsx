@@ -4,12 +4,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../LanguageToggle';
 import { AuthContext } from '../../context/AuthContext';
+import { CartContext } from '../../context/CartContext';
+import { WishlistContext } from '../../context/WishlistContext';
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const { t } = useTranslation();
     const { user, logout } = useContext(AuthContext);
+    const { cartItems } = useContext(CartContext);
+    const { wishlistCount } = useContext(WishlistContext);
 
     const isActive = (path) => location.pathname === path ? "text-brand-maroon font-bold" : "";
 
@@ -33,9 +37,19 @@ const Header = () => {
                         <>
                             <Link to="/wishlist" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/wishlist')}`} title="My Wishlist">
                                 <Heart size={20} />
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                                        {wishlistCount}
+                                    </span>
+                                )}
                             </Link>
                             <Link to="/cart" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/cart')}`} title="Cart">
                                 <ShoppingBag size={20} />
+                                {cartItems.length > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-brand-maroon text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                                        {cartItems.length}
+                                    </span>
+                                )}
                             </Link>
                         </>
                     )}
