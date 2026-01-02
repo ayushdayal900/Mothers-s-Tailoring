@@ -309,7 +309,7 @@ const CustomerDashboard = () => {
                                                 <p className="font-bold text-gray-900 mt-1">₹{order.totalAmount}</p>
                                             </div>
                                             <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
-                                                <Link to={`/ order / ${order._id} `}>View Details</Link>
+                                                <Link to={`/order/${order._id}`}>View Details</Link>
                                             </button>
                                         </div>
                                     ))
@@ -363,7 +363,7 @@ const CustomerDashboard = () => {
                                                 <p className="font-bold text-xl text-gray-900 mt-2">₹{order.totalAmount}</p>
                                             </div>
                                             <Link
-                                                to={`/ order / ${order._id} `}
+                                                to={`/order/${order._id}`}
                                                 className="px-6 py-2 bg-brand-maroon text-white rounded-lg hover:bg-red-900 transition text-sm font-medium"
                                             >
                                                 View Details
