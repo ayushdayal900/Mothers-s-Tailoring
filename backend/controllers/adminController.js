@@ -223,3 +223,22 @@ exports.getAllPayments = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+// @desc    Delete User
+// @route   DELETE /api/admin/customers/:id
+// @access  Private/Admin
+exports.deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (user) {
+            await user.deleteOne();
+            res.json({ message: 'User removed' });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};

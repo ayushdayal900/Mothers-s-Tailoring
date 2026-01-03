@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { User, Mail, Phone, ShoppingBag } from 'lucide-react';
+import { User, Mail, Phone, ShoppingBag, Trash2 } from 'lucide-react';
 
 const AdminCustomers = () => {
     // Ideally we fetch from /api/admin/customers, but we can reuse /api/users if admin middleware allows
@@ -11,33 +11,53 @@ const AdminCustomers = () => {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const fetchCustomers = async () => {
+        try {
+            // Get token from localStorage
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+
+            const { data } = await api.get('/admin/customers', config);
+            setCustomers(data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching customers:", error.response?.data?.message || error.message);
+            if (error.response?.status === 401) {
+                alert("Session expired or unauthorized. Please login as Admin.");
+                // Optional: redirect to login
+                // window.location.href = '/login';
+            }
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchCustomers = async () => {
+        fetchCustomers();
+    }, []);
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
             try {
-                // Get token from localStorage
                 const token = localStorage.getItem('token');
                 const config = {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 };
-
-                const { data } = await api.get('/admin/customers', config);
-                setCustomers(data);
-                setLoading(false);
+                await api.delete(`/admin/customers/${id}`, config);
+                // Refresh the list
+                fetchCustomers();
+                alert('User deleted successfully');
             } catch (error) {
-                console.error("Error fetching customers:", error.response?.data?.message || error.message);
-                if (error.response?.status === 401) {
-                    alert("Session expired or unauthorized. Please login as Admin.");
-                    // Optional: redirect to login
-                    // window.location.href = '/login';
-                }
-                setLoading(false);
+                console.error("Error deleting user:", error);
+                alert('Failed to delete user');
             }
-        };
-
-        fetchCustomers();
-    }, []);
+        }
+    };
 
     if (loading) return <div className="p-8 text-center">Loading customers...</div>;
 
@@ -82,14 +102,21 @@ const AdminCustomers = () => {
                                 <td className="px-6 py-4 font-medium">₹{customer.totalSpent}</td>
                                 <td className="px-6 py-4 text-sm text-gray-500">{new Date(customer.createdAt).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 text-right">
-                                    <button className="text-brand-maroon hover:underline text-sm font-medium">View History</button>
+                                    <button className="text-brand-maroon hover:underline text-sm font-medium mr-4">View History</button>
+                                    <button
+                                        onClick={() => handleDelete(customer._id)}
+                                        className="text-red-500 hover:text-red-700 transition-colors"
+                                        title="Delete User"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 };
 
