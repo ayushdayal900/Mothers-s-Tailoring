@@ -40,6 +40,7 @@ const Register = () => {
         <div className="min-h-screen flex items-center justify-center bg-brand-ivory py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-brand-gold/20">
                 <div>
+                    <img src="/logo.png" alt="Mahalaxmi Tailors" className="h-20 mx-auto mb-4" />
                     <h2 className="mt-6 text-center text-3xl font-serif font-bold text-brand-maroon">
                         Create an Account
                     </h2>

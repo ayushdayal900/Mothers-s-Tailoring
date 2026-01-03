@@ -21,8 +21,9 @@ const Header = () => {
         <header className="bg-brand-ivory/90 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-brand-gold/20">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 {/* Logo */}
-                <Link to="/" className="text-2xl font-serif font-bold text-brand-maroon tracking-wide flex items-center gap-2">
-                    {t('brand.name')} <span className="text-brand-gold">{t('brand.suffix')}</span>
+                <Link to="/" className="flex items-center gap-2">
+                    <img src="/logo.png" alt="Mahalaxmi Tailors" className="h-12 w-auto object-contain" />
+                    {/* {t('brand.name')} <span className="text-brand-gold">{t('brand.suffix')}</span> */}
                 </Link>
 
                 {/* Desktop Nav */}
