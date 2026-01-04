@@ -11,10 +11,10 @@ const About = () => {
             <div className="container mx-auto px-4">
 
                 {/* Hero Section */}
-                <div className="text-center mb-16">
-                    <span className="text-brand-gold font-bold tracking-widest uppercase mb-2 block">Our Heritage</span>
+                <div className="text-left mb-16">
                     <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-maroon mb-6">Weaving Tradition Since 2004</h1>
-                    <p className="max-w-2xl mx-auto text-brand-charcoal text-lg">
+                    <span className="text-center text-brand-gold font-bold tracking-widest uppercase mb-2 block">Our Heritage</span>
+                    <p className="text-center max-w-5xl mx-auto text-brand-charcoal text-lg">
                         At Mahalaxmi Tailors, we don't just stitch clothes; we craft heirlooms. Specialized in authentic Maharashtrian attire, we bring decades of mastery to every fold and stitch.
                     </p>
                 </div>
@@ -30,7 +30,7 @@ const About = () => {
                         />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-serif font-bold text-brand-maroon mb-4">The Master Tailor's Touch</h2>
+                        <h2 className="text-3xl font-serif font-bold text-brand-maroon mb-8">The Master Tailor's Touch</h2>
                         <p className="text-gray-600 mb-4 leading-relaxed">
                             Founded by {t('hero.name')}, Mahalaxmi Tailors began as a small boutique in Mangrulpir with a singular vision: to preserve the elegance of the traditional Patals while adapting it for the modern woman.
                         </p>

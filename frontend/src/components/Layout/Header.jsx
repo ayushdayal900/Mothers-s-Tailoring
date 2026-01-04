@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Menu, X, ShoppingBag, User, LogOut, Heart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,28 +15,49 @@ const Header = () => {
     const { cartItems } = useContext(CartContext);
     const { wishlistCount } = useContext(WishlistContext);
 
+    useEffect(() => {
+        console.log('Restored Header Loaded: Standard Layout');
+    }, []);
+
     const isActive = (path) => location.pathname === path ? "text-brand-maroon font-bold" : "";
 
     return (
         <header className="bg-brand-ivory/90 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-brand-gold/20">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                {/* Desktop Nav (Left Side) */}
-                <nav className="hidden md:flex space-x-6 font-medium text-brand-charcoal text-sm lg:text-base">
+                {/* Logo */}
+                <Link to="/" className="flex items-center gap-2">
+                    <img src="/logo.png" alt="Mahalaxmi Tailors" className="h-12 w-auto object-contain" />
+                    {/* {t('brand.name')} <span className="text-brand-gold">{t('brand.suffix')}</span> */}
+                </Link>
+
+                {/* Desktop Nav */}
+                <nav className="hidden md:flex space-x-8 font-medium text-brand-charcoal">
                     <Link to="/" className={`hover:text-brand-maroon transition duration-300 ${isActive('/')}`}>{t('nav.home')}</Link>
                     <Link to="/designs" className={`hover:text-brand-maroon transition duration-300 ${isActive('/designs')}`}>{t('nav.designs')}</Link>
                     <Link to="/gallery" className={`hover:text-brand-maroon transition duration-300 ${isActive('/gallery')}`}>{t('nav.gallery')}</Link>
-                </nav>
-
-                {/* Logo (Absolute Center) */}
-                <Link to="/" className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
-                    <img src="/logo.png" alt="Mahalaxmi Tailors" className="h-16 w-auto object-contain" />
-                </Link>
-
-                {/* Desktop Nav (Right Side) */}
-                <nav className="hidden md:flex space-x-6 font-medium text-brand-charcoal text-sm lg:text-base">
                     <Link to="/about" className={`hover:text-brand-maroon transition duration-300 ${isActive('/about')}`}>{t('nav.about')}</Link>
                     <Link to="/faq" className={`hover:text-brand-maroon transition duration-300 ${isActive('/faq')}`}>{t('nav.faq')}</Link>
                     <Link to="/contact" className={`hover:text-brand-maroon transition duration-300 ${isActive('/contact')}`}>{t('nav.contact')}</Link>
+                    {user && (
+                        <>
+                            <Link to="/wishlist" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/wishlist')}`} title="My Wishlist">
+                                <Heart size={20} />
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                                        {wishlistCount}
+                                    </span>
+                                )}
+                            </Link>
+                            <Link to="/cart" className={`relative hover:text-brand-maroon transition duration-300 ${isActive('/cart')}`} title="Cart">
+                                <ShoppingBag size={20} />
+                                {cartItems.length > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-brand-maroon text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                                        {cartItems.length}
+                                    </span>
+                                )}
+                            </Link>
+                        </>
+                    )}
                 </nav>
 
                 {/* User Actions */}
@@ -44,11 +65,11 @@ const Header = () => {
                     {user ? (
                         <div className="flex items-center gap-4">
                             <Link to="/customer/dashboard" className="flex items-center gap-2 text-sm font-medium text-brand-maroon hover:text-brand-gold transition">
-                                <User size={18} />
+                                <User size={20} />
                                 <span className="hidden lg:inline">{user.firstName}</span>
                             </Link>
                             <button onClick={logout} className="text-gray-500 hover:text-red-500 transition" title="Logout">
-                                <LogOut size={18} />
+                                <LogOut size={20} />
                             </button>
                         </div>
                     ) : (

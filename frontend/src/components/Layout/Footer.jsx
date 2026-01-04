@@ -13,7 +13,7 @@ const Footer = () => {
                 <div className="grid md:grid-cols-4 gap-8 mb-12">
                     {/* Brand & Description */}
                     <div className="space-y-4 flex flex-col items-center text-center md:items-start md:text-left lg:items-center lg:text-center">
-                        <img src="/logo.png" alt="Mahalaxmi Tailors" className="h-20 w-auto" />
+                        <img src="/logo.png" alt="Mahalaxmi Tailors" className="h-20 w-auto mx-auto" />
                         <h3 className="text-2xl font-serif text-brand-gold font-bold">{t('brand.name')} {t('brand.suffix')}</h3>
                         <p className="text-sm opacity-80 leading-relaxed max-w-xs">
                             {t('footer.description')}

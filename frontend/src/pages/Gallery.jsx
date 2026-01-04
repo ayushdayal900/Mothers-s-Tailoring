@@ -58,7 +58,7 @@ const Gallery = () => {
     return (
         <div className="pt-4 pb-12 bg-gray-50 min-h-screen">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-12">
+                <div className="text-left mb-12">
                     <h1 className="text-4xl font-serif font-bold text-brand-maroon mb-4">Customer Gallery</h1>
                     <p className="text-gray-600">See how our creations bring elegance to your special moments.</p>
                 </div>
