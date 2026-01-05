@@ -20,7 +20,7 @@ const generateRefreshToken = (id) => {
 const cookieOptions = {
     httpOnly: true,
     secure: true, // Always secure for Vercel/Render
-    sameSite: 'none', // Always none for Cross-Site
+    sameSite: 'None', // Always none for Cross-Site
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
