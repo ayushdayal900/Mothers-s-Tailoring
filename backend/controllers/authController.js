@@ -136,14 +136,15 @@ exports.loginUser = async (req, res) => {
 exports.refresh = async (req, res) => {
     const cookies = req.cookies;
     console.log('DEBUG: Refresh Route Hit');
-    console.log('DEBUG: Body Recieved:', req.body);
-    // console.log('DEBUG: Cookies:', cookies ? Object.keys(cookies) : 'None');
+    console.log('DEBUG: Body Refresh Token:', req.body.refreshToken ? 'Present' : 'Missing');
+    console.log('DEBUG: Cookies:', cookies ? Object.keys(cookies) : 'None');
+    console.log('DEBUG: Cookie JWT:', cookies?.jwt ? 'Present' : 'Missing');
 
     let refreshToken = cookies?.jwt;
 
     // Fallback: Check body if cookie is missing
     if (!refreshToken && req.body.refreshToken) {
-        // console.log('DEBUG: Using Refresh Token from Body');
+        console.log('DEBUG: Using Refresh Token from Body fallback');
         refreshToken = req.body.refreshToken;
     }
 
