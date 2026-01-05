@@ -40,16 +40,20 @@ const Checkout = () => {
 
     const fetchMeasurements = async () => {
         try {
+            console.log("Fetching measurements in Checkout...");
             const res = await api.get('/measurements');
+            console.log("Checkout Measurements Response:", res.data);
             // Backend returns array of profiles.
             if (res.data && res.data.length > 0) {
                 setMeasurements(res.data[0]);
                 setSelectedMeasurement(res.data[0]._id);
+                console.log("Selected Measurement:", res.data[0]._id);
             } else {
                 setMeasurements(null);
+                console.log("No measurements found in array.");
             }
         } catch (error) {
-            console.error("No measurements", error);
+            console.error("No measurements error:", error);
         }
     };
 
