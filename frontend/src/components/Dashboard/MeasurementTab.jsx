@@ -55,15 +55,24 @@ const MeasurementTab = () => {
         setSaving(true);
         setMessage('');
 
+        // Clean data: Convert empty strings to null/undefined for numeric fields
+        const cleanedData = Object.fromEntries(
+            Object.entries(formData).map(([key, value]) => {
+                if (key === 'profileName' || key === 'standardSize' || key === 'unit') return [key, value];
+                return [key, value === '' ? null : value];
+            })
+        );
+
         try {
-            const res = await api.post('/measurements', formData);
+            const res = await api.post('/measurements', cleanedData);
             setMeasurements(res.data); // Update view with saved data
             setIsEditing(false);
             setMessage('Measurements saved successfully!');
             setTimeout(() => setMessage(''), 3000);
         } catch (error) {
             console.error("Error saving measurements", error);
-            setMessage('Failed to save. Please try again.');
+            const errorMsg = error.response?.data?.message || 'Failed to save. Please try again.';
+            setMessage(errorMsg);
         } finally {
             setSaving(false);
         }

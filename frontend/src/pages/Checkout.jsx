@@ -40,9 +40,14 @@ const Checkout = () => {
 
     const fetchMeasurements = async () => {
         try {
-            const res = await api.get('/customers/measurements');
-            setMeasurements(res.data);
-            if (res.data) setSelectedMeasurement(res.data._id);
+            const res = await api.get('/measurements');
+            // Backend returns array of profiles.
+            if (res.data && res.data.length > 0) {
+                setMeasurements(res.data[0]);
+                setSelectedMeasurement(res.data[0]._id);
+            } else {
+                setMeasurements(null);
+            }
         } catch (error) {
             console.error("No measurements", error);
         }

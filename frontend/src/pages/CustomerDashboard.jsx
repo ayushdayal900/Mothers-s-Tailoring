@@ -56,8 +56,12 @@ const CustomerDashboard = () => {
 
     const fetchMeasurements = async () => {
         try {
-            const res = await api.get('/customers/measurements');
-            setMeasurements(res.data);
+            const res = await api.get('/measurements');
+            if (res.data && res.data.length > 0) {
+                setMeasurements(res.data[0]);
+            } else {
+                setMeasurements(null);
+            }
         } catch (error) {
             console.log("No measurements found or error fetching");
             setMeasurements(null);

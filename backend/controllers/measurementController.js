@@ -42,7 +42,6 @@ const saveMeasurement = async (req, res) => {
             measurement.inseam = inseam;
             measurement.length = length;
             measurement.thigh = thigh;
-            measurement.thigh = thigh;
             measurement.unit = unit || 'inch';
             measurement.standardSize = standardSize || 'Custom';
 

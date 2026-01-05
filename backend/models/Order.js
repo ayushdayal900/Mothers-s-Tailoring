@@ -68,7 +68,7 @@ const orderSchema = new mongoose.Schema({
     // We can store a snapshot or reference an address ID. Storing snapshot is better for history.
     measurementProfile: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'MeasurementProfile',
+        ref: 'Measurement',
     },
     specialNotes: String,
     expectedDeliveryDate: Date,
