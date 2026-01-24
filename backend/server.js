@@ -41,7 +41,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Removed to fix Express 5 PathError - cors middleware handles preflight automatically
+// app.options('*', cors(corsOptions)); // Removed to fix Express 5 PathError - cors middleware handles preflight automatically
+   app.options('/*', cors(corsOptions));
 
 // Security Middleware
 app.use(helmet({
