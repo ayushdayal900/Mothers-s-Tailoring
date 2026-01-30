@@ -63,6 +63,12 @@ jobs:
           aws s3 sync frontend/dist s3://mahalaxmi-frontend-prod --delete
 
       - name: Invalidate CloudFront (Optional)
-        if: secrets.CLOUDFRONT_DISTRIBUTION_ID != ''
+        env:
+          DIST_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          if [ -n "$DIST_ID" ]; then
+            echo "Invalidating CloudFront Distribution: $DIST_ID"
+            aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
+          else
+            echo "No Distribution ID provided. Skipping invalidation."
+          fi
