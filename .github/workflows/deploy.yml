@@ -63,6 +63,6 @@ jobs:
           aws s3 sync frontend/dist s3://mahalaxmi-frontend-prod --delete
 
       - name: Invalidate CloudFront (Optional)
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        if: secrets.CLOUDFRONT_DISTRIBUTION_ID != ''
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
